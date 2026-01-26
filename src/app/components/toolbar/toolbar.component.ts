@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import { ColorStore } from '../../store/color.store';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
@@ -27,6 +27,9 @@ export interface ToolbarSection {
 export class ToolbarComponent {
   readonly store = inject(ColorStore);
 
+  exportPng = output<void>();
+  toggleFullscreen = output<void>();
+
   readonly sections: ToolbarSection[] = [
     {
       id: 'extra',
@@ -36,6 +39,21 @@ export class ToolbarComponent {
           icon: 'pi pi-sparkles',
           tooltip: 'Generate (Spacebar)',
           action: () => this.store.generateColors(),
+        },
+      ],
+    },
+    {
+      id: 'export',
+      actions: [
+        {
+          icon: 'pi pi-download',
+          tooltip: 'Download PNG',
+          action: () => this.exportPng.emit(),
+        },
+        {
+          icon: 'pi pi-window-maximize',
+          tooltip: 'Fullscreen (F)',
+          action: () => this.toggleFullscreen.emit(),
         },
       ],
     },

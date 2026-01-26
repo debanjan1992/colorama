@@ -27,8 +27,28 @@
       {{ colorDisplay() }}
     </h2>
     <span
-      class="block text-xs md:text-sm font-medium mt-1 md:mt-2 opacity-60 tracking-wider"
+      class="block text-xs lg:text-sm font-medium mt-1 md:mt-2 opacity-60 tracking-wider"
       >{{ colorName() }}</span
+    >
+    <span
+      class="block text-xs lg:text-sm font-medium mt-1 opacity-0 group-hover:opacity-50 group-hover:hover:opacity-80 tracking-wider cursor-pointer transition-opacity"
+      (click)="copyRgb(); $event.stopPropagation()"
+      (keydown.enter)="copyRgb(); $event.stopPropagation()"
+      tabindex="0"
+      role="button"
+      pTooltip="Click to copy RGB"
+      tooltipPosition="bottom"
+      >{{ rgbDisplay() }}</span
+    >
+    <span
+      class="block text-xs lg:text-sm font-medium mt-0.5 opacity-0 group-hover:opacity-50 group-hover:hover:opacity-80 tracking-wider cursor-pointer transition-opacity"
+      (click)="copyHsl(); $event.stopPropagation()"
+      (keydown.enter)="copyHsl(); $event.stopPropagation()"
+      tabindex="0"
+      role="button"
+      pTooltip="Click to copy HSL"
+      tooltipPosition="bottom"
+      >{{ hslDisplay() }}</span
     >
   </div>
 

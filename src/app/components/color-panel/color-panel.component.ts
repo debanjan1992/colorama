@@ -11,11 +11,13 @@ import { ColorToolsComponent } from '../color-tools/color-tools.component';
 import namer from 'color-namer';
 import chroma from 'chroma-js';
 import { ColorItem, ColorStore } from '../../store/color.store';
+import { getContrastColor, hexToRgb, hexToHsl } from '../../utils/color-utils';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-color-panel',
   standalone: true,
-  imports: [ColorToolsComponent],
+  imports: [ColorToolsComponent, Tooltip],
   templateUrl: './color-panel.component.html',
   styleUrl: './color-panel.component.scss',
 })
@@ -43,11 +45,19 @@ export class ColorPanelComponent {
   });
 
   textColor = computed(() => {
-    return this.getContrastColor(this.color());
+    return getContrastColor(this.color());
   });
 
   colorDisplay = computed(() => {
     return this.color().replace('#', '');
+  });
+
+  rgbDisplay = computed(() => {
+    return hexToRgb(this.color());
+  });
+
+  hslDisplay = computed(() => {
+    return hexToHsl(this.color());
   });
 
   shades = computed(() => {
@@ -117,15 +127,27 @@ export class ColorPanelComponent {
     }
   }
 
+  async copyRgb() {
+    try {
+      await navigator.clipboard.writeText(hexToRgb(this.color()));
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  }
+
+  async copyHsl() {
+    try {
+      await navigator.clipboard.writeText(hexToHsl(this.color()));
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  }
+
   getDotColor(hex: string): string {
     return chroma(hex).luminance() > 0.5 ? 'black' : 'white';
   }
 
   getContrastColor(hex: string): 'black' | 'white' {
-    const r = parseInt(hex.substring(1, 3), 16);
-    const g = parseInt(hex.substring(3, 5), 16);
-    const b = parseInt(hex.substring(5, 7), 16);
-    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
-    return yiq >= 128 ? 'black' : 'white';
+    return getContrastColor(hex);
   }
 }

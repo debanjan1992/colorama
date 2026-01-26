@@ -1,75 +1,30 @@
 <div class="flex flex-row md:flex-col gap-1 md:gap-1.5">
-  <p-button
-    class="transition-all duration-200 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto"
-    [text]="true"
-    [plain]="true"
-    [rounded]="true"
-    icon="pi pi-bars"
-    pTooltip="Drag"
-    tooltipPosition="right"
-    [style]="{ color: textColor(), cursor: 'grab' }"
-    styleClass="!bg-transparent !border-none !shadow-none hover:!bg-white/10 drag-handle"
-    (mouseenter)="allowDrag.emit(true)"
-    (mouseleave)="allowDrag.emit(false)"
-    (mousedown)="allowDrag.emit(true)"
-    (mouseup)="allowDrag.emit(false)"
-  ></p-button>
-  @if (isRemovable()) {
-    <p-button
-      class="transition-all duration-200 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto hidden md:block"
-      [text]="true"
-      [plain]="true"
-      [rounded]="true"
-      icon="pi pi-times"
-      (onClick)="remove.emit()"
-      pTooltip="Remove color"
-      tooltipPosition="right"
-      [style]="{ color: textColor() }"
-      styleClass="!bg-transparent !border-none !shadow-none hover:!bg-white/10"
-    ></p-button>
+  @for (tool of tools(); track $index) {
+    @if (tool.visible !== false) {
+      <p-button
+        [class]="'transition-all duration-200 ' + (tool.customClass || '')"
+        [class.opacity-0]="!tool.alwaysVisible"
+        [class.group-hover:opacity-100]="!tool.alwaysVisible"
+        [class.pointer-events-none]="!tool.alwaysVisible"
+        [class.group-hover:pointer-events-auto]="!tool.alwaysVisible"
+        [class.group-focus-within:opacity-100]="!tool.alwaysVisible"
+        [class.group-focus-within:pointer-events-auto]="!tool.alwaysVisible"
+        [class.opacity-100]="tool.alwaysVisible"
+        [class.pointer-events-auto]="tool.alwaysVisible"
+        [text]="true"
+        [plain]="true"
+        [rounded]="true"
+        [icon]="tool.icon"
+        (onClick)="tool.action()"
+        [pTooltip]="tool.tooltip"
+        tooltipPosition="right"
+        [style]="{ color: textColor(), ...(tool.customStyle || {}) }"
+        styleClass="!bg-transparent !border-none !shadow-none hover:!bg-white/10"
+        (mouseenter)="tool.customEvents?.['mouseenter']?.()"
+        (mouseleave)="tool.customEvents?.['mouseleave']?.()"
+        (mousedown)="tool.customEvents?.['mousedown']?.()"
+        (mouseup)="tool.customEvents?.['mouseup']?.()"
+      ></p-button>
+    }
   }
-  <p-button
-    class="transition-all duration-200 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto hidden md:block"
-    [text]="true"
-    [plain]="true"
-    [rounded]="true"
-    icon="pi pi-th-large"
-    (onClick)="toggleShades.emit()"
-    pTooltip="View shades"
-    tooltipPosition="right"
-    [style]="{ color: textColor() }"
-    styleClass="!bg-transparent !border-none !shadow-none hover:!bg-white/10"
-  ></p-button>
-  <p-button
-    class="transition-all duration-200 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto"
-    [text]="true"
-    [plain]="true"
-    [rounded]="true"
-    icon="pi pi-copy"
-    (onClick)="copyHex.emit()"
-    pTooltip="Copy HEX"
-    tooltipPosition="right"
-    [style]="{ color: textColor() }"
-    styleClass="!bg-transparent !border-none !shadow-none hover:!bg-white/10"
-  ></p-button>
-  <p-button
-    class="transition-all duration-200"
-    [class.opacity-0]="!item().locked"
-    [class.group-hover:opacity-100]="!item().locked"
-    [class.pointer-events-none]="!item().locked"
-    [class.group-hover:pointer-events-auto]="!item().locked"
-    [class.group-focus-within:opacity-100]="!item().locked"
-    [class.group-focus-within:pointer-events-auto]="!item().locked"
-    [class.opacity-100]="item().locked"
-    [class.pointer-events-auto]="item().locked"
-    [text]="true"
-    [plain]="true"
-    [rounded]="true"
-    [icon]="item().locked ? 'pi pi-lock' : 'pi pi-lock-open'"
-    (onClick)="toggleLock.emit()"
-    [pTooltip]="item().locked ? 'Unlock' : 'Lock'"
-    tooltipPosition="right"
-    [style]="{ color: textColor() }"
-    styleClass="!bg-transparent !border-none !shadow-none hover:!bg-white/10"
-  ></p-button>
 </div>

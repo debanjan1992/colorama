@@ -1,6 +1,7 @@
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import chroma from 'chroma-js';
 import { generatePalette } from '../utils/color-generator';
+import { APP_CONFIG } from '../config/app.config';
 
 export interface ColorItem {
   id: string;
@@ -40,7 +41,7 @@ export const ColorStore = signalStore(
       if (current.length === 0) return; // Don't save empty state
 
       const history = [...store.history(), JSON.parse(JSON.stringify(current))];
-      if (history.length > 5) history.shift();
+      if (history.length > APP_CONFIG.history.maxSize) history.shift();
 
       patchState(store, { history, future: [] });
     };
@@ -97,7 +98,7 @@ export const ColorStore = signalStore(
         if (!previous) return;
 
         const future = [JSON.parse(JSON.stringify(current)), ...store.future()];
-        if (future.length > 5) future.pop();
+        if (future.length > APP_CONFIG.history.maxSize) future.pop();
 
         patchState(store, {
           colors: previous,
@@ -118,7 +119,7 @@ export const ColorStore = signalStore(
           ...store.history(),
           JSON.parse(JSON.stringify(current)),
         ];
-        if (history.length > 5) history.shift();
+        if (history.length > APP_CONFIG.history.maxSize) history.shift();
 
         patchState(store, {
           colors: next,
@@ -134,7 +135,7 @@ export const ColorStore = signalStore(
       removeColor(id: string): void {
         if (store.activeShadesPanelId()) return;
         const current = store.colors();
-        if (current.length <= 2) return;
+        if (current.length <= APP_CONFIG.colors.minCount) return;
 
         pushHistory();
         patchState(store, {
@@ -146,7 +147,7 @@ export const ColorStore = signalStore(
         if (store.activeShadesPanelId()) return;
 
         const current = store.colors();
-        if (current.length >= 8) return;
+        if (current.length >= APP_CONFIG.colors.maxCount) return;
 
         const c1 = current[index];
         const c2 = current[index + 1];
