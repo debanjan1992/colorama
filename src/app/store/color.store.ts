@@ -1,5 +1,7 @@
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import chroma from 'chroma-js';
+import { inject } from '@angular/core';
+import { MessageService } from 'primeng/api';
 import { generatePalette } from '../utils/color-generator';
 import { APP_CONFIG } from '../config/app.config';
 
@@ -36,6 +38,8 @@ export const ColorStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withMethods((store) => {
+    const messageService = inject(MessageService);
+
     const pushHistory = () => {
       const current = store.colors();
       if (current.length === 0) return; // Don't save empty state
@@ -105,6 +109,12 @@ export const ColorStore = signalStore(
           history,
           future,
         });
+
+        messageService.add({
+          severity: 'secondary',
+          summary: 'Palette restored',
+          life: 2000,
+        });
       },
 
       redo(): void {
@@ -125,6 +135,12 @@ export const ColorStore = signalStore(
           colors: next,
           history,
           future,
+        });
+
+        messageService.add({
+          severity: 'secondary',
+          summary: 'Next palette applied',
+          life: 2000,
         });
       },
 

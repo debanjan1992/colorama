@@ -11,8 +11,15 @@ import { ColorToolsComponent } from '../color-tools/color-tools.component';
 import namer from 'color-namer';
 import chroma from 'chroma-js';
 import { ColorItem, ColorStore } from '../../store/color.store';
-import { getContrastColor, hexToRgb, hexToHsl } from '../../utils/color-utils';
+import {
+  getContrastColor,
+  hexToRgb,
+  hexToHsl,
+  getContrastRatio,
+  getWCAGLevel,
+} from '../../utils/color-utils';
 import { Tooltip } from 'primeng/tooltip';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-color-panel',
@@ -24,6 +31,7 @@ import { Tooltip } from 'primeng/tooltip';
 export class ColorPanelComponent {
   readonly store = inject(ColorStore);
   private readonly el = inject(ElementRef);
+  private readonly messageService = inject(MessageService);
 
   item = input.required<ColorItem>();
 
@@ -58,6 +66,14 @@ export class ColorPanelComponent {
 
   hslDisplay = computed(() => {
     return hexToHsl(this.color());
+  });
+
+  contrastRatio = computed(() => {
+    return getContrastRatio(this.textColor(), this.color());
+  });
+
+  wcagLevel = computed(() => {
+    return getWCAGLevel(this.contrastRatio());
   });
 
   shades = computed(() => {
@@ -106,6 +122,11 @@ export class ColorPanelComponent {
 
     try {
       await navigator.clipboard.writeText(hex);
+      this.messageService.add({
+        severity: 'success',
+        summary: `Shade ${hex.toUpperCase()} applied and copied`,
+        life: 2000,
+      });
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
@@ -113,7 +134,13 @@ export class ColorPanelComponent {
 
   async copyColor() {
     try {
-      await navigator.clipboard.writeText(this.color());
+      const color = this.color();
+      await navigator.clipboard.writeText(color);
+      this.messageService.add({
+        severity: 'success',
+        summary: `Color ${color.toUpperCase()} copied`,
+        life: 2000,
+      });
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
@@ -122,6 +149,11 @@ export class ColorPanelComponent {
   async copyShade(hex: string) {
     try {
       await navigator.clipboard.writeText(hex);
+      this.messageService.add({
+        severity: 'success',
+        summary: `Shade ${hex.toUpperCase()} copied`,
+        life: 2000,
+      });
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
@@ -129,7 +161,13 @@ export class ColorPanelComponent {
 
   async copyRgb() {
     try {
-      await navigator.clipboard.writeText(hexToRgb(this.color()));
+      const rgb = hexToRgb(this.color());
+      await navigator.clipboard.writeText(rgb);
+      this.messageService.add({
+        severity: 'success',
+        summary: `RGB ${rgb} copied`,
+        life: 2000,
+      });
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
@@ -137,7 +175,13 @@ export class ColorPanelComponent {
 
   async copyHsl() {
     try {
-      await navigator.clipboard.writeText(hexToHsl(this.color()));
+      const hsl = hexToHsl(this.color());
+      await navigator.clipboard.writeText(hsl);
+      this.messageService.add({
+        severity: 'success',
+        summary: `HSL ${hsl} copied`,
+        life: 2000,
+      });
     } catch (err) {
       console.error('Failed to copy: ', err);
     }

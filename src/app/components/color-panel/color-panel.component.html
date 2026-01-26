@@ -8,6 +8,23 @@
   role="button"
 >
   @if (showTools()) {
+    <div
+      class="absolute bottom-4 left-1/2 -translate-x-1/2 md:bottom-auto md:left-4 md:top-4 md:translate-x-0 z-10 flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      [pTooltip]="'Contrast Ratio: ' + contrastRatio().toFixed(2) + ':1'"
+      tooltipPosition="top"
+    >
+      <span
+        class="w-2 h-2 rounded-full"
+        [class.bg-green-500]="wcagLevel() === 'AAA'"
+        [class.bg-yellow-500]="wcagLevel() === 'AA'"
+        [class.bg-red-500]="wcagLevel() === 'Fail'"
+      ></span>
+      <span
+        class="text-[10px] font-bold tracking-tighter uppercase opacity-80"
+        >{{ wcagLevel() }}</span
+      >
+    </div>
+
     <app-color-tools
       class="absolute right-4 top-1/2 -translate-y-1/2 md:relative md:top-auto md:right-auto md:translate-y-0 md:mb-6"
       [item]="item()"
@@ -31,7 +48,7 @@
       >{{ colorName() }}</span
     >
     <span
-      class="block text-xs lg:text-sm font-medium mt-1 opacity-0 group-hover:opacity-50 group-hover:hover:opacity-80 tracking-wider cursor-pointer transition-opacity"
+      class="hidden md:block text-xs lg:text-sm font-medium mt-1 opacity-0 group-hover:opacity-50 group-hover:hover:opacity-80 tracking-wider cursor-pointer transition-opacity"
       (click)="copyRgb(); $event.stopPropagation()"
       (keydown.enter)="copyRgb(); $event.stopPropagation()"
       tabindex="0"
@@ -41,7 +58,7 @@
       >{{ rgbDisplay() }}</span
     >
     <span
-      class="block text-xs lg:text-sm font-medium mt-0.5 opacity-0 group-hover:opacity-50 group-hover:hover:opacity-80 tracking-wider cursor-pointer transition-opacity"
+      class="hidden md:block text-xs lg:text-sm font-medium mt-0.5 opacity-0 group-hover:opacity-50 group-hover:hover:opacity-80 tracking-wider cursor-pointer transition-opacity"
       (click)="copyHsl(); $event.stopPropagation()"
       (keydown.enter)="copyHsl(); $event.stopPropagation()"
       tabindex="0"

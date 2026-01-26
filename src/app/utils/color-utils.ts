@@ -17,3 +17,15 @@ export function hexToHsl(hex: string): string {
   const [h, s, l] = chroma(hex).hsl();
   return `hsl(${Math.round(h || 0)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
 }
+
+export function getContrastRatio(fg: string, bg: string): number {
+  return chroma.contrast(fg, bg);
+}
+
+export type WCAGLevel = 'Fail' | 'AA' | 'AAA';
+
+export function getWCAGLevel(ratio: number): WCAGLevel {
+  if (ratio >= 7) return 'AAA';
+  if (ratio >= 4.5) return 'AA';
+  return 'Fail';
+}
