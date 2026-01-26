@@ -1,0 +1,72 @@
+<div
+  class="h-full w-full flex flex-col justify-center md:justify-end items-start md:items-center relative pl-6 md:pl-0 md:pb-16 group outline-none"
+  [style.background-color]="color()"
+  [style.color]="textColor()"
+  (click)="copyColor()"
+  (keydown.enter)="copyColor()"
+  tabindex="0"
+  role="button"
+>
+  @if (showTools()) {
+    <app-color-tools
+      [item]="item()"
+      (remove)="delete.emit(item().id)"
+      (toggleShades)="toggleShades()"
+      (copyHex)="copyColor()"
+      (toggleLock)="lock.emit(item().id)"
+    ></app-color-tools>
+  }
+  <div
+    class="text-left md:text-center md:mb-8 transition-transform duration-300"
+  >
+    <h2 class="uppercase text-xl md:text-3xl font-bold m-0 tracking-widest">
+      {{ colorDisplay() }}
+    </h2>
+    <span
+      class="block text-xs md:text-sm font-medium mt-1 md:mt-2 opacity-60 tracking-wider"
+      >{{ colorName() }}</span
+    >
+  </div>
+
+  @if (isShadesOpen()) {
+    <div
+      class="absolute inset-0 z-50 bg-white flex flex-col"
+      (click)="$event.stopPropagation()"
+      (keydown.esc)="toggleShades()"
+      tabindex="0"
+      role="dialog"
+      aria-label="Color shades"
+    >
+      <div class="flex flex-col h-full w-full">
+        @for (shade of shades(); track shade) {
+          <div
+            class="flex-1 min-h-0 w-full cursor-pointer relative flex items-center justify-center transition-transform hover:z-10 group/shade"
+            [style.background-color]="shade"
+            (click)="selectShade(shade)"
+            (keydown.enter)="selectShade(shade)"
+            (keydown.space)="selectShade(shade)"
+            tabindex="0"
+            role="button"
+            title="Click to select {{ shade }}"
+          >
+            <!-- Hex Label (Hover) -->
+            <span
+              class="opacity-0 text-xs font-semibold tracking-wider pointer-events-none transition-opacity duration-200 group-hover/shade:opacity-100"
+              [style.color]="getContrastColor(shade)"
+              >{{ shade.replace('#', '').toUpperCase() }}</span
+            >
+
+            <!-- Active Indicator -->
+            @if (shade.toLowerCase() === color().toLowerCase()) {
+              <span
+                class="material-icons absolute right-4 text-lg pointer-events-none opacity-80"
+                [style.color]="getContrastColor(shade)"
+                >check_circle</span
+              >
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

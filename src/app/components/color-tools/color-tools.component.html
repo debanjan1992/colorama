@@ -1,0 +1,44 @@
+<div
+  class="absolute top-1/2 -translate-y-1/2 right-4 md:right-auto md:left-1/2 md:-translate-x-1/2 flex flex-row md:flex-col gap-4 md:gap-6"
+>
+  @if (isRemovable()) {
+    <button
+      class="bg-transparent border-none cursor-pointer p-0 text-inherit transition-all duration-200 hover:scale-125 outline-none opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto hidden md:block"
+      (click)="$event.stopPropagation(); remove.emit()"
+      title="Remove color"
+    >
+      <span class="material-icons block text-xl md:text-2xl">close</span>
+    </button>
+  }
+  <button
+    class="bg-transparent border-none cursor-pointer p-0 text-inherit transition-all duration-200 hover:scale-125 outline-none opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto"
+    (click)="$event.stopPropagation(); toggleShades.emit()"
+    title="View shades"
+  >
+    <span class="material-icons block text-xl md:text-2xl">view_headline</span>
+  </button>
+  <button
+    class="bg-transparent border-none cursor-pointer p-0 text-inherit transition-all duration-200 hover:scale-125 outline-none opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto"
+    (click)="$event.stopPropagation(); copyHex.emit()"
+    title="Copy HEX"
+  >
+    <span class="material-icons block text-xl md:text-2xl">content_copy</span>
+  </button>
+  <button
+    class="bg-transparent border-none cursor-pointer p-0 text-inherit transition-all duration-200 hover:scale-125 outline-none"
+    [class.opacity-0]="!item().locked"
+    [class.group-hover:opacity-100]="!item().locked"
+    [class.pointer-events-none]="!item().locked"
+    [class.group-hover:pointer-events-auto]="!item().locked"
+    [class.group-focus-within:opacity-100]="!item().locked"
+    [class.group-focus-within:pointer-events-auto]="!item().locked"
+    [class.opacity-100]="item().locked"
+    [class.pointer-events-auto]="item().locked"
+    (click)="$event.stopPropagation(); toggleLock.emit()"
+    title="{{ item().locked ? 'Unlock color' : 'Lock color' }}"
+  >
+    <span class="material-icons block text-xl md:text-2xl">{{
+      item().locked ? 'lock' : 'lock_open'
+    }}</span>
+  </button>
+</div>

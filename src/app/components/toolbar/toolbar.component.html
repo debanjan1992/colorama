@@ -1,0 +1,25 @@
+<div
+  class="flex items-center justify-center h-12 bg-white border-b border-gray-200 px-4 gap-4"
+>
+  <button
+    class="flex items-center justify-center p-2 rounded-md transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed group cursor-pointer"
+    [disabled]="store.history().length === 0"
+    (click)="store.undo()"
+    title="Undo"
+  >
+    <span class="material-icons text-gray-600 group-hover:text-black"
+      >undo</span
+    >
+  </button>
+
+  <button
+    class="flex items-center justify-center p-2 rounded-md transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed group cursor-pointer"
+    [disabled]="store.future().length === 0"
+    (click)="store.redo()"
+    title="Redo"
+  >
+    <span class="material-icons text-gray-600 group-hover:text-black"
+      >redo</span
+    >
+  </button>
+</div>
