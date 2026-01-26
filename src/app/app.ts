@@ -1,20 +1,12 @@
 import { Component, HostListener, inject, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { ColorPanelComponent } from './components/color-panel/color-panel.component';
-import { CommonModule } from '@angular/common';
-import { HeaderComponent } from './components/header/header.component';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { ColorStore } from './store/color.store';
+import { ColorPanelComponent } from './components/color-panel/color-panel.component';
+import { SavePaletteComponent } from './components/save-palette/save-palette.component';
 
 @Component({
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    ColorPanelComponent,
-    HeaderComponent,
-    ToolbarComponent,
-  ],
+  imports: [ColorPanelComponent, ToolbarComponent, SavePaletteComponent],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',

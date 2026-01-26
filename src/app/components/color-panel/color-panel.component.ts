@@ -7,16 +7,15 @@ import {
   input,
   output,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ColorToolsComponent } from '../color-tools/color-tools.component';
 import namer from 'color-namer';
 import chroma from 'chroma-js';
 import { ColorItem, ColorStore } from '../../store/color.store';
-import { ColorToolsComponent } from '../color-tools/color-tools.component';
 
 @Component({
   selector: 'app-color-panel',
   standalone: true,
-  imports: [CommonModule, ColorToolsComponent],
+  imports: [ColorToolsComponent],
   templateUrl: './color-panel.component.html',
   styleUrl: './color-panel.component.scss',
 })

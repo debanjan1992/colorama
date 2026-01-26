@@ -1,0 +1,51 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* 
+  Use standard CSS without @apply to ensure compatibility 
+  if the environment has issues with @apply in component-scoped styles.
+  Actually, let's try plain CSS variables for higher compatibility.
+*/
+
+::ng-deep .toolbar-btn {
+  background-color: transparent !important;
+  border-style: none !important;
+  box-shadow: none !important;
+  color: black !important;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    opacity 0.2s;
+}
+
+::ng-deep .toolbar-btn:not(.p-disabled):hover {
+  background-color: #f3f4f6 !important; /* gray-100 */
+}
+
+::ng-deep .toolbar-btn.p-disabled {
+  color: #9ca3af !important; /* gray-400 */
+  opacity: 0.3 !important;
+}
+
+::ng-deep .toolbar-btn .p-button-label {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  ::ng-deep .toolbar-btn .p-button-label {
+    display: inline-block;
+    margin-left: 0.25rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+}
+
+::ng-deep .toolbar-btn.btn-with-label {
+  padding: 0.5rem 0.75rem !important;
+}
+
+::ng-deep .toolbar-btn:not(.btn-with-label) {
+  padding: 0.5rem !important;
+}

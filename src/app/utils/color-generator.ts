@@ -6,76 +6,105 @@ export interface ColorInput {
 }
 
 export function generatePalette(current: ColorInput[]): string[] {
-  let seedHex: string;
-  const lockedColors = current.filter((c) => c.locked);
+  const lockedColors = current.filter((c) => c.locked).map((c) => c.hex);
+  const count = current.length || 5;
+  const palette: string[] = new Array(count).fill('');
 
-  // 1. Pick a seed color (use locked color if available, else random)
+  // 1. Preserve locked colors
+  current.forEach((c, i) => {
+    if (c.locked) palette[i] = c.hex;
+  });
+
+  // 2. Pick a seed
+  let seedHex: string;
   if (lockedColors.length > 0) {
-    seedHex = lockedColors[Math.floor(Math.random() * lockedColors.length)].hex;
+    seedHex = lockedColors[Math.floor(Math.random() * lockedColors.length)];
   } else {
-    seedHex = chroma.random().hex();
+    // 20% chance of a neutral seed (black/grey/white)
+    if (Math.random() < 0.2) {
+      const g = Math.floor(Math.random() * 255);
+      seedHex = chroma.rgb(g, g, g).hex();
+    } else {
+      seedHex = chroma.random().hex();
+    }
   }
 
-  // 2. Define strategies for harmony
   const strategies = [
-    // Analogous (Nearby Hues)
+    // Analogous
     (base: string) =>
       chroma.scale([base, chroma(base).set('hsl.h', '+40')]).mode('lch'),
     (base: string) =>
       chroma.scale([chroma(base).set('hsl.h', '-40'), base]).mode('lch'),
-
-    // Monochromatic (Lightness variations)
+    // Monochromatic (Larger range for deeper blacks/brighter whites)
     (base: string) =>
       chroma
-        .scale([chroma(base).darken(2), chroma(base).brighten(2)])
+        .scale([
+          chroma(base).set('hsl.l', 0.05),
+          base,
+          chroma(base).set('hsl.l', 0.95),
+        ])
         .mode('lch'),
-
-    // Complementary (Opposite)
+    // Complementary
     (base: string) =>
       chroma.scale([base, chroma(base).set('hsl.h', '+180')]).mode('lch'),
-
-    // Split Complements / Triadic feel
+    // Neutral / Grayscaled Accent
     (base: string) =>
-      chroma.scale([base, chroma(base).set('hsl.h', '+150')]).mode('lch'),
+      chroma
+        .scale([
+          chroma(base).desaturate(3).darken(2),
+          chroma(base).desaturate(3).brighten(2),
+        ])
+        .mode('lch'),
   ];
 
-  // 3. Pick a random strategy
   const strategy = strategies[Math.floor(Math.random() * strategies.length)];
   const scale = strategy(seedHex);
+  const basePalette = scale.colors(count);
 
-  // 4. Generate colors based on the total count needed (default 5 if empty)
-  const count = current.length || 5;
-  const palette = scale.colors(count);
+  // 3. Delta-E Threshold (15-20 is usually enough for "visually distinct")
+  const THRESHOLD = 18;
 
-  // 5. Inject Accent Colors (1 or 2)
-  const unlockedIndices: number[] = [];
-  if (current.length === 0) {
-    // All indices 0 to count-1 are available
-    for (let i = 0; i < count; i++) unlockedIndices.push(i);
-  } else {
-    current.forEach((c, i) => {
-      if (!c.locked) unlockedIndices.push(i);
+  const isDistinct = (hex: string, existing: string[]) => {
+    return existing.every((other) => {
+      if (!other) return true;
+      return chroma.deltaE(hex, other) > THRESHOLD;
     });
+  };
+
+  // 4. Populate unlocked slots with diversity check
+  for (let i = 0; i < count; i++) {
+    if (palette[i]) continue; // Skip locked
+
+    let candidate = basePalette[i];
+    let attempts = 0;
+
+    // Try to find a distinct color by jittering or randomizing
+    while (!isDistinct(candidate, palette) && attempts < 10) {
+      if (attempts < 5) {
+        // Jitter hue Slightly
+        candidate = chroma(candidate)
+          .set('hsl.h', `+${attempts * 10}`)
+          .hex();
+      } else {
+        // Pure random replacement if jittering fails
+        candidate = chroma.random().hex();
+      }
+      attempts++;
+    }
+    palette[i] = candidate;
   }
 
-  if (unlockedIndices.length > 0) {
-    const numAccents = Math.random() > 0.5 ? 2 : 1;
-    const accentBase = chroma(seedHex).set('hsl.s', 1).set('hsl.l', 0.5); // Ensure vibrant
+  // 5. Occasionally force a high-contrast accent if space allows
+  const unlockedIndices = palette
+    .map((_, i) => i)
+    .filter((i) => !current[i]?.locked);
 
-    for (let k = 0; k < numAccents; k++) {
-      if (unlockedIndices.length === 0) break;
-
-      // Pick a random slot
-      const randomIndex = Math.floor(Math.random() * unlockedIndices.length);
-      const slot = unlockedIndices[randomIndex];
-
-      // Remove this slot from available
-      unlockedIndices.splice(randomIndex, 1);
-
-      // Generate accent (Complementary or Triadic shift)
-      // Shift by 120 (triad) + jitter
-      const shift = 120 + k * 60 + Math.random() * 60;
-      palette[slot] = accentBase.set('hsl.h', `+${shift}`).hex();
+  if (unlockedIndices.length > 0 && Math.random() > 0.7) {
+    const slot =
+      unlockedIndices[Math.floor(Math.random() * unlockedIndices.length)];
+    const accent = chroma(seedHex).set('hsl.h', '+120').saturate(2).hex();
+    if (isDistinct(accent, palette)) {
+      palette[slot] = accent;
     }
   }
 

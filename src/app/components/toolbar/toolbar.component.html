@@ -1,25 +1,44 @@
 <div
-  class="flex items-center justify-center h-12 bg-white border-b border-gray-200 px-4 gap-4"
+  class="flex items-center justify-between h-14 bg-white border-b border-gray-200 px-6"
 >
-  <button
-    class="flex items-center justify-center p-2 rounded-md transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed group cursor-pointer"
-    [disabled]="store.history().length === 0"
-    (click)="store.undo()"
-    title="Undo"
-  >
-    <span class="material-icons text-gray-600 group-hover:text-black"
-      >undo</span
+  <!-- Left Section (Logo + Info) -->
+  <div class="flex items-center gap-6">
+    <div class="flex items-center gap-2">
+      <i class="pi pi-palette text-indigo-600 text-xl font-bold"></i>
+      <h1 class="text-gray-900 text-xl font-bold tracking-tight m-0">
+        Colorama
+      </h1>
+    </div>
+    <span
+      class="text-sm text-gray-500 font-medium tracking-tight hidden lg:block"
+      >Press the spacebar to generate color palettes!</span
     >
-  </button>
+  </div>
 
-  <button
-    class="flex items-center justify-center p-2 rounded-md transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed group cursor-pointer"
-    [disabled]="store.future().length === 0"
-    (click)="store.redo()"
-    title="Redo"
-  >
-    <span class="material-icons text-gray-600 group-hover:text-black"
-      >redo</span
-    >
-  </button>
+  <!-- Right Section -->
+  <div class="flex items-center gap-1">
+    @for (section of sections; track section.id; let lastSection = $last) {
+      <div class="flex items-center gap-0.5">
+        @for (action of section.actions; track action.tooltip) {
+          <p-button
+            [icon]="action.icon"
+            [label]="action.label"
+            [text]="true"
+            severity="secondary"
+            [pTooltip]="action.tooltip"
+            tooltipPosition="bottom"
+            [disabled]="action.disabled ? action.disabled() : false"
+            (onClick)="action.action ? action.action() : null"
+            styleClass="toolbar-btn {{ action.styleClass || '' }} {{
+              action.label ? 'btn-with-label' : ''
+            }}"
+          ></p-button>
+        }
+      </div>
+
+      @if (!lastSection) {
+        <div class="w-px h-6 bg-gray-200 mx-1"></div>
+      }
+    }
+  </div>
 </div>

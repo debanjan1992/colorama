@@ -1,0 +1,105 @@
+<p-dialog
+  [visible]="store.isSaveDialogOpen()"
+  (visibleChange)="onClose()"
+  header="Save Palette"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '450px' }"
+  styleClass="save-palette-dialog"
+>
+  <div class="flex flex-col gap-6 pt-2">
+    <!-- Name -->
+    <div class="flex flex-col gap-2">
+      <label for="name" class="font-bold text-gray-700"
+        >Name <span class="text-red-500">*</span></label
+      >
+      <input
+        pInputText
+        id="name"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        placeholder="My new palette"
+        class="w-full"
+        autocomplete="off"
+        required
+      />
+    </div>
+
+    <!-- Description -->
+    <div class="flex flex-col gap-2">
+      <label for="description" class="font-bold text-gray-700"
+        >Description</label
+      >
+      <textarea
+        pTextarea
+        id="description"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+        [rows]="3"
+        [autoResize]="true"
+        class="w-full"
+      ></textarea>
+    </div>
+
+    <!-- Tags -->
+    <div class="flex flex-col gap-2">
+      <label for="tags" class="font-bold text-gray-700">Tags</label>
+      <div
+        class="tags-container flex flex-wrap gap-2 p-2 border border-gray-300 rounded-lg min-h-[46px] transition-all hover:border-gray-400 focus-within:!border-blue-500 focus-within:ring-2 focus-within:ring-blue-100"
+        [class.opacity-60]="tags().length >= 5"
+      >
+        @for (tag of tags(); track $index) {
+          <div
+            class="tag-chip flex items-center gap-1.5 bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-xs font-bold border border-blue-100"
+          >
+            <span>{{ tag }}</span>
+            <button
+              type="button"
+              class="pi pi-times text-[10px] cursor-pointer hover:text-blue-900 border-none bg-transparent p-0 flex items-center justify-center focus:outline-none focus:ring-1 focus:ring-blue-400 rounded-sm"
+              (click)="removeTag($index)"
+              (keydown.enter)="removeTag($index)"
+              (keydown.space)="removeTag($index); $event.preventDefault()"
+              aria-label="Remove tag"
+            ></button>
+          </div>
+        }
+        <input
+          id="tags"
+          type="text"
+          [ngModel]="tagsString()"
+          (ngModelChange)="onTagsChange($event)"
+          (keydown)="handleTagInput($event)"
+          [placeholder]="tags().length >= 5 ? 'Limit reached' : 'Add tag...'"
+          [disabled]="tags().length >= 5"
+          class="flex-1 min-w-[80px] bg-transparent border-none outline-none text-sm text-gray-800 p-1 disabled:cursor-not-allowed"
+          autocomplete="off"
+        />
+      </div>
+      <div class="flex justify-between items-center px-1">
+        <span
+          class="text-[10px] text-gray-400 uppercase font-bold tracking-wider"
+          >Press Enter or comma to add</span
+        >
+        <span
+          class="text-[10px] font-bold uppercase tracking-wider"
+          [class.text-gray-400]="tags().length < 5"
+          [class.text-red-500]="tags().length >= 5"
+        >
+          {{ tags().length }} / 5
+        </span>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="mt-4">
+      <p-button
+        label="Save"
+        (onClick)="onSave()"
+        [disabled]="!name()"
+        class="w-full"
+        styleClass="w-full !py-3 !text-lg !font-bold !bg-blue-600 !border-blue-600 hover:!bg-blue-700"
+      ></p-button>
+    </div>
+  </div>
+</p-dialog>

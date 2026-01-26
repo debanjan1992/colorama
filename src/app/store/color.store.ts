@@ -8,14 +8,25 @@ export interface ColorItem {
   locked: boolean;
 }
 
+export interface SavedPalette {
+  id: string;
+  name: string;
+  description: string;
+  tags: string[];
+  colors: string[];
+  timestamp: number;
+}
+
 const initialState: {
   colors: ColorItem[];
   activeShadesPanelId: string | null;
+  isSaveDialogOpen: boolean;
   history: ColorItem[][];
   future: ColorItem[][];
 } = {
   colors: [],
   activeShadesPanelId: null,
+  isSaveDialogOpen: false,
   history: [],
   future: [],
 };
@@ -82,7 +93,9 @@ export const ColorStore = signalStore(
         const current = store.colors();
         if (history.length === 0) return;
 
-        const previous = history.pop()!;
+        const previous = history.pop();
+        if (!previous) return;
+
         const future = [JSON.parse(JSON.stringify(current)), ...store.future()];
         if (future.length > 5) future.pop();
 
@@ -98,7 +111,9 @@ export const ColorStore = signalStore(
         const current = store.colors();
         if (future.length === 0) return;
 
-        const next = future.shift()!;
+        const next = future.shift();
+        if (!next) return;
+
         const history = [
           ...store.history(),
           JSON.parse(JSON.stringify(current)),
@@ -151,6 +166,34 @@ export const ColorStore = signalStore(
           ...current.slice(index + 1),
         ];
         patchState(store, { colors: newColors });
+      },
+
+      setSaveDialogOpen(open: boolean): void {
+        patchState(store, { isSaveDialogOpen: open });
+      },
+
+      savePalette(metadata: {
+        name: string;
+        description: string;
+        tags: string[];
+      }): void {
+        const currentPalettesJson = localStorage.getItem('saved_palettes');
+        const palettes: SavedPalette[] = currentPalettesJson
+          ? JSON.parse(currentPalettesJson)
+          : [];
+
+        const newPalette: SavedPalette = {
+          id: crypto.randomUUID(),
+          ...metadata,
+          colors: store.colors().map((c) => c.hex),
+          timestamp: Date.now(),
+        };
+
+        localStorage.setItem(
+          'saved_palettes',
+          JSON.stringify([newPalette, ...palettes]),
+        );
+        patchState(store, { isSaveDialogOpen: false });
       },
     };
   }),
