@@ -22,4 +22,5 @@ export class ColorToolsComponent {
   toggleShades = output<void>();
   copyHex = output<void>();
   toggleLock = output<void>();
+  allowDrag = output<boolean>();
 }

@@ -27,6 +27,7 @@ export class ColorPanelComponent {
 
   delete = output<string>();
   lock = output<string>();
+  allowDrag = output<boolean>();
 
   color = computed(() => this.item().hex);
 
@@ -50,13 +51,21 @@ export class ColorPanelComponent {
   });
 
   shades = computed(() => {
-    const l = chroma(this.color()).get('lab.l') / 100;
+    const color = this.color();
+    const l = chroma(color).get('lab.l') / 100;
+    const count = 33;
+    const colorIndex = Math.round(l * (count - 1));
 
-    return chroma
-      .scale(['black', this.color(), 'white'])
-      .domain([0, l, 1])
+    const shadesBefore = chroma
+      .scale(['black', color])
       .mode('lab')
-      .colors(33);
+      .colors(colorIndex + 1);
+    const shadesAfter = chroma
+      .scale([color, 'white'])
+      .mode('lab')
+      .colors(count - colorIndex);
+
+    return [...shadesBefore.slice(0, -1), ...shadesAfter];
   });
 
   @HostListener('document:click', ['$event'])

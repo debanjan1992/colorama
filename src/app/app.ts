@@ -29,4 +29,47 @@ export class App implements OnInit {
   insertColor(index: number) {
     this.store.insertColor(index);
   }
+
+  draggedIndex: number | null = null;
+  allowDrag = false;
+
+  onDragStart(index: number) {
+    if (!this.allowDrag) return;
+    this.draggedIndex = index;
+    // Capture history only once at the start of a drag
+    this.store.reorderColors(index, index);
+  }
+
+  onDragOver(event: DragEvent, index: number) {
+    event.preventDefault();
+    if (this.draggedIndex === null || this.draggedIndex === index) return;
+
+    const from = this.draggedIndex;
+    const to = index;
+
+    // Use View Transition API for smooth animations
+    const doc = document as any;
+    if (doc.startViewTransition) {
+      doc.startViewTransition(() => {
+        this.store.reorderColors(from, to, true); // Skip history for intermediate moves
+        this.draggedIndex = to;
+      });
+    } else {
+      this.store.reorderColors(from, to, true);
+      this.draggedIndex = to;
+    }
+  }
+
+  onDrop(index: number) {
+    if (this.draggedIndex !== null && this.draggedIndex !== index) {
+      this.store.reorderColors(this.draggedIndex, index);
+    }
+    this.draggedIndex = null;
+    this.allowDrag = false;
+  }
+
+  onDragEnd() {
+    this.draggedIndex = null;
+    this.allowDrag = false;
+  }
 }

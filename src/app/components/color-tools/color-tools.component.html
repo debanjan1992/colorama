@@ -1,4 +1,19 @@
 <div class="flex flex-row md:flex-col gap-1 md:gap-1.5">
+  <p-button
+    class="transition-all duration-200 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto"
+    [text]="true"
+    [plain]="true"
+    [rounded]="true"
+    icon="pi pi-bars"
+    pTooltip="Drag"
+    tooltipPosition="right"
+    [style]="{ color: textColor(), cursor: 'grab' }"
+    styleClass="!bg-transparent !border-none !shadow-none hover:!bg-white/10 drag-handle"
+    (mouseenter)="allowDrag.emit(true)"
+    (mouseleave)="allowDrag.emit(false)"
+    (mousedown)="allowDrag.emit(true)"
+    (mouseup)="allowDrag.emit(false)"
+  ></p-button>
   @if (isRemovable()) {
     <p-button
       class="transition-all duration-200 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto hidden md:block"

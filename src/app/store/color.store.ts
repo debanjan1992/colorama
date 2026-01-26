@@ -195,6 +195,23 @@ export const ColorStore = signalStore(
         );
         patchState(store, { isSaveDialogOpen: false });
       },
+
+      reorderColors(
+        fromIndex: number,
+        toIndex: number,
+        skipHistory = false,
+      ): void {
+        if (fromIndex === toIndex) return;
+        if (!skipHistory) {
+          pushHistory();
+        }
+
+        const colors = [...store.colors()];
+        const [movedItem] = colors.splice(fromIndex, 1);
+        colors.splice(toIndex, 0, movedItem);
+
+        patchState(store, { colors });
+      },
     };
   }),
 );

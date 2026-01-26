@@ -8,8 +8,17 @@
     $last) {
     <app-color-panel
       [item]="item"
+      [draggable]="allowDrag"
+      [style.view-transition-name]="'panel-' + item.id"
+      (allowDrag)="allowDrag = $event"
+      (dragstart)="onDragStart(i)"
+      (dragover)="onDragOver($event, i)"
+      (drop)="onDrop(i)"
+      (dragend)="onDragEnd()"
       (delete)="store.removeColor($event)"
       (lock)="store.toggleLock($event)"
+      class="flex-1 min-h-0"
+      [class.opacity-50]="draggedIndex === i"
     ></app-color-panel>
     @if (!last && store.colors().length < 8 && !store.activeShadesPanelId()) {
     <div

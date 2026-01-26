@@ -57,18 +57,18 @@ export class ToolbarComponent {
         },
       ],
     },
-    {
-      id: 'main',
-      actions: [
-        // { label: 'View', icon: 'pi pi-eye', tooltip: 'View palette' },
-        // { label: 'Export', icon: 'pi pi-upload', tooltip: 'Export palette' },
-        {
-          label: 'Save',
-          icon: 'pi pi-heart',
-          tooltip: 'Save to collections',
-          action: () => this.store.setSaveDialogOpen(true),
-        },
-      ],
-    },
+    // {
+    //   id: 'main',
+    //   actions: [
+    //     // { label: 'View', icon: 'pi pi-eye', tooltip: 'View palette' },
+    //     // { label: 'Export', icon: 'pi pi-upload', tooltip: 'Export palette' },
+    //     {
+    //       label: 'Save',
+    //       icon: 'pi pi-heart',
+    //       tooltip: 'Save to collections',
+    //       action: () => this.store.setSaveDialogOpen(true),
+    //     },
+    //   ],
+    // },
   ];
 }
