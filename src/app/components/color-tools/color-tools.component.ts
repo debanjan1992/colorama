@@ -22,6 +22,7 @@ interface ToolButton {
   standalone: true,
   imports: [CommonModule, Button, Tooltip],
   templateUrl: './color-tools.component.html',
+  styleUrl: './color-tools.component.scss',
 })
 export class ColorToolsComponent {
   readonly store = inject(ColorStore);

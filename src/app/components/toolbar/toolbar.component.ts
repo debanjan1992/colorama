@@ -28,6 +28,7 @@ export class ToolbarComponent {
   readonly store = inject(ColorStore);
 
   exportPng = output<void>();
+  copyLink = output<void>();
   toggleFullscreen = output<void>();
 
   readonly sections: ToolbarSection[] = [
@@ -45,6 +46,11 @@ export class ToolbarComponent {
     {
       id: 'export',
       actions: [
+        {
+          icon: 'pi pi-link',
+          tooltip: 'Copy Link',
+          action: () => this.copyLink.emit(),
+        },
         {
           icon: 'pi pi-download',
           tooltip: 'Download PNG',

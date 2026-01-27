@@ -38,8 +38,47 @@ body {
 }
 
 /* PrimeNG Toast Customization */
-.p-toast-message-content {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.5rem;
+.p-toast {
+  width: auto !important;
+  max-width: 90vw;
+
+  .p-toast-message {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    border-radius: 6px !important;
+    margin-bottom: 1rem !important;
+
+    .p-toast-message-content {
+      padding: 0.6rem 1rem !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.5rem;
+
+      .p-toast-message-icon,
+      .p-toast-message-close-button {
+        display: none !important;
+      }
+
+      .p-toast-message-text {
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 0.5rem;
+        font-weight: 500;
+        font-size: 0.85rem;
+        letter-spacing: 0.025em;
+
+        .p-toast-summary {
+          font-weight: 600 !important;
+        }
+
+        .p-toast-detail {
+          display: none !important;
+        }
+      }
+    }
+  }
 }

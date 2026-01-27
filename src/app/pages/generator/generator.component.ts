@@ -2,7 +2,6 @@ import {
   Component,
   HostListener,
   inject,
-  OnInit,
   ElementRef,
   signal,
   viewChild,
@@ -11,6 +10,7 @@ import { ToolbarComponent } from '../../components/toolbar/toolbar.component';
 import { ColorStore } from '../../store/color.store';
 import { ColorPanelComponent } from '../../components/color-panel/color-panel.component';
 import { Tooltip } from 'primeng/tooltip';
+import { MessageService } from 'primeng/api';
 import { ExportService } from '../../core/services/export.service';
 
 @Component({
@@ -20,21 +20,17 @@ import { ExportService } from '../../core/services/export.service';
   templateUrl: './generator.component.html',
   styleUrl: './generator.component.scss',
 })
-export class GeneratorComponent implements OnInit {
+export class GeneratorComponent {
   readonly store = inject(ColorStore);
   private readonly exportService = inject(ExportService);
+  private readonly messageService = inject(MessageService);
 
   paletteContainer = viewChild<ElementRef>('paletteContainer');
-
-  ngOnInit() {
-    this.store.generateColors();
-  }
 
   isFullscreen = signal(false);
 
   async toggleFullscreen() {
     if (!this.isFullscreen()) {
-      // Enter fullscreen
       try {
         await document.documentElement.requestFullscreen();
         this.isFullscreen.set(true);
@@ -42,7 +38,6 @@ export class GeneratorComponent implements OnInit {
         console.error('Failed to enter fullscreen:', error);
       }
     } else {
-      // Exit fullscreen
       try {
         if (document.fullscreenElement) {
           await document.exitFullscreen();
@@ -51,6 +46,19 @@ export class GeneratorComponent implements OnInit {
       } catch (error) {
         console.error('Failed to exit fullscreen:', error);
       }
+    }
+  }
+
+  async copyLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Link copied to clipboard',
+        life: 2000,
+      });
+    } catch (err) {
+      console.error('Failed to copy link: ', err);
     }
   }
 
@@ -63,7 +71,6 @@ export class GeneratorComponent implements OnInit {
       this.exportService.downloadImage(result.blob);
     } else {
       console.error('Failed to export palette:', result.error);
-      // TODO: Show user-friendly error message
     }
   }
 

@@ -1,7 +1,15 @@
-import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalStore,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import chroma from 'chroma-js';
-import { inject } from '@angular/core';
+import { inject, DestroyRef } from '@angular/core';
 import { MessageService } from 'primeng/api';
+import { Router, ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { generatePalette } from '../utils/color-generator';
 import { APP_CONFIG } from '../config/app.config';
 
@@ -39,10 +47,29 @@ export const ColorStore = signalStore(
   withState(initialState),
   withMethods((store) => {
     const messageService = inject(MessageService);
+    const router = inject(Router);
+    const route = inject(ActivatedRoute);
+
+    const getHexCodesFromColors = (colors: ColorItem[]) =>
+      colors.map((c) => c.hex.replace('#', '')).join('-');
+
+    const updateUrl = (colors: ColorItem[]) => {
+      const hexList = getHexCodesFromColors(colors);
+      const currentParams = route.snapshot.queryParamMap.get('colors');
+
+      if (hexList !== currentParams) {
+        router.navigate([], {
+          relativeTo: route,
+          queryParams: { colors: hexList },
+          queryParamsHandling: 'merge',
+          replaceUrl: false,
+        });
+      }
+    };
 
     const pushHistory = () => {
       const current = store.colors();
-      if (current.length === 0) return; // Don't save empty state
+      if (current.length === 0) return;
 
       const history = [...store.history(), JSON.parse(JSON.stringify(current))];
       if (history.length > APP_CONFIG.history.maxSize) history.shift();
@@ -51,46 +78,76 @@ export const ColorStore = signalStore(
     };
 
     return {
+      syncFromUrl(colorsParam: string | null): void {
+        if (!colorsParam) {
+          if (store.colors().length === 0) {
+            this.generateColors();
+          }
+          return;
+        }
+
+        const currentHexList = getHexCodesFromColors(store.colors());
+        if (colorsParam === currentHexList) return;
+
+        const hexCodes = colorsParam.split('-');
+        const colorItems: ColorItem[] = hexCodes
+          .filter((hex) => /^([0-9A-F]{3}){1,2}$/i.test(hex))
+          .map((hex) => ({
+            id: crypto.randomUUID(),
+            hex: `#${hex}`,
+            locked: false,
+          }));
+
+        if (colorItems.length >= APP_CONFIG.colors.minCount) {
+          patchState(store, { colors: colorItems });
+        } else if (store.colors().length === 0) {
+          this.generateColors();
+        }
+      },
+
       generateColors(): void {
         if (store.activeShadesPanelId()) return;
 
         pushHistory();
         const current = store.colors();
         const palette = generatePalette(current);
+        let newColors: ColorItem[] = [];
 
         if (current.length === 0) {
-          patchState(store, {
-            colors: palette.map((hex) => ({
-              id: crypto.randomUUID(),
-              hex,
-              locked: false,
-            })),
-          });
+          newColors = palette.map((hex) => ({
+            id: crypto.randomUUID(),
+            hex,
+            locked: false,
+          }));
         } else {
-          patchState(store, {
-            colors: current.map((c, i) =>
-              c.locked ? c : { ...c, hex: palette[i] },
-            ),
-          });
+          newColors = current.map((c, i) =>
+            c.locked ? c : { ...c, hex: palette[i] },
+          );
         }
+
+        patchState(store, { colors: newColors });
+        updateUrl(newColors);
       },
 
       toggleLock(id: string): void {
         if (store.activeShadesPanelId()) return;
         pushHistory();
 
-        patchState(store, {
-          colors: store
-            .colors()
-            .map((c) => (c.id === id ? { ...c, locked: !c.locked } : c)),
-        });
+        const newColors = store
+          .colors()
+          .map((c) => (c.id === id ? { ...c, locked: !c.locked } : c));
+
+        patchState(store, { colors: newColors });
+        updateUrl(newColors);
       },
 
       updateColor(id: string, hex: string): void {
         pushHistory();
-        patchState(store, {
-          colors: store.colors().map((c) => (c.id === id ? { ...c, hex } : c)),
-        });
+        const newColors = store
+          .colors()
+          .map((c) => (c.id === id ? { ...c, hex } : c));
+        patchState(store, { colors: newColors });
+        updateUrl(newColors);
       },
 
       undo(): void {
@@ -109,6 +166,7 @@ export const ColorStore = signalStore(
           history,
           future,
         });
+        updateUrl(previous);
 
         messageService.add({
           severity: 'secondary',
@@ -136,6 +194,7 @@ export const ColorStore = signalStore(
           history,
           future,
         });
+        updateUrl(next);
 
         messageService.add({
           severity: 'secondary',
@@ -154,9 +213,9 @@ export const ColorStore = signalStore(
         if (current.length <= APP_CONFIG.colors.minCount) return;
 
         pushHistory();
-        patchState(store, {
-          colors: store.colors().filter((c) => c.id !== id),
-        });
+        const newColors = store.colors().filter((c) => c.id !== id);
+        patchState(store, { colors: newColors });
+        updateUrl(newColors);
       },
 
       insertColor(index: number): void {
@@ -183,6 +242,7 @@ export const ColorStore = signalStore(
           ...current.slice(index + 1),
         ];
         patchState(store, { colors: newColors });
+        updateUrl(newColors);
       },
 
       setSaveDialogOpen(open: boolean): void {
@@ -228,7 +288,20 @@ export const ColorStore = signalStore(
         colors.splice(toIndex, 0, movedItem);
 
         patchState(store, { colors });
+        updateUrl(colors);
       },
     };
+  }),
+  withHooks({
+    onInit(store) {
+      const route = inject(ActivatedRoute);
+      const destroyRef = inject(DestroyRef);
+
+      route.queryParamMap
+        .pipe(takeUntilDestroyed(destroyRef))
+        .subscribe((params) => {
+          store.syncFromUrl(params.get('colors'));
+        });
+    },
   }),
 );
