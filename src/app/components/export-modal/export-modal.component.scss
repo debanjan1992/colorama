@@ -1,0 +1,30 @@
+@reference 'tailwindcss'
+
+:host ::ng-deep {
+  .export-dialog {
+    .p-dialog-header {
+      @apply flex items-center justify-center relative py-4;
+      .p-dialog-title {
+        @apply text-lg font-bold text-gray-900 w-full text-center;
+      }
+      .p-dialog-header-icons {
+        @apply absolute right-4;
+      }
+    }
+
+    .p-dialog-content {
+      @apply px-6 pb-6 pt-0;
+    }
+  }
+
+  .p-inputtext {
+    @apply shadow-none;
+  }
+
+  .p-select {
+    @apply shadow-none bg-gray-50 border-none;
+    .p-select-label {
+      @apply py-3;
+    }
+  }
+}

@@ -1,11 +1,15 @@
 <div class="flex flex-col h-full w-full overflow-hidden">
   @if (!isFullscreen()) {
+    <app-header></app-header>
     <app-toolbar
       (exportPng)="exportAsPng()"
       (copyLink)="copyLink()"
       (toggleFullscreen)="toggleFullscreen()"
     ></app-toolbar>
   }
+
+  <app-export-modal></app-export-modal>
+  <app-save-modal></app-save-modal>
 
   @if (isFullscreen()) {
     <button

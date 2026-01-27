@@ -1,0 +1,53 @@
+<p-dialog
+  [visible]="store.isExportDialogOpen()"
+  (visibleChange)="close()"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  header="Export palette as image"
+  [style]="{ width: '400px', borderRadius: '16px' }"
+  styleClass="export-dialog"
+>
+  <div class="flex flex-col gap-6 pt-4">
+    <!-- General Content -->
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="title" class="text-sm font-semibold text-gray-700"
+          >Title</label
+        >
+        <input
+          pInputText
+          id="title"
+          [(ngModel)]="title"
+          placeholder="Enter palette name"
+          class="w-full !rounded-xl !border-gray-200 focus:!border-blue-500 focus:!ring-1 focus:!ring-blue-500"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="colorSpace" class="text-sm font-semibold text-gray-700"
+          >Color Space</label
+        >
+        <p-select
+          id="colorSpace"
+          [options]="colorSpaces()"
+          [(ngModel)]="selectedColorSpace"
+          optionLabel="label"
+          optionValue="value"
+          class="w-full !rounded-xl !border-gray-200"
+          styleClass="w-full"
+          appendTo="body"
+        ></p-select>
+      </div>
+    </div>
+
+    <!-- Action Button -->
+    <div class="pt-4">
+      <p-button
+        label="Export"
+        (onClick)="handleExport()"
+        styleClass="w-full !bg-blue-600 !border-none !rounded-xl !py-3 !text-lg !font-bold hover:!bg-blue-700 transition-colors"
+      ></p-button>
+    </div>
+  </div>
+</p-dialog>

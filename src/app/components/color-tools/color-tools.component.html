@@ -18,7 +18,7 @@
         (onClick)="tool.action()"
         [pTooltip]="tool.tooltip"
         tooltipPosition="right"
-        [style]="{ color: textColor(), ...(tool.customStyle || {}) }"
+        [ngStyle]="getToolStyles(tool)"
         styleClass="!bg-transparent !border-none !shadow-none hover:!bg-white/10"
         (mouseenter)="tool.customEvents?.['mouseenter']?.()"
         (mouseleave)="tool.customEvents?.['mouseleave']?.()"

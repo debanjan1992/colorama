@@ -1,0 +1,92 @@
+<p-dialog
+  [visible]="store.isSaveDialogOpen()"
+  (visibleChange)="close()"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [header]="
+    store.editingPalette() ? 'Edit library palette' : 'Save palette to library'
+  "
+  [style]="{ width: '450px', borderRadius: '16px' }"
+  styleClass="save-dialog"
+>
+  <div class="flex flex-col gap-6 pt-4">
+    <div class="flex flex-col gap-4">
+      <!-- Preview Colors -->
+      <div
+        class="flex h-12 rounded-xl overflow-hidden border border-gray-100 shadow-sm"
+      >
+        @if (store.editingPalette(); as palette) {
+          @for (color of palette.colors; track $index) {
+            <div
+              class="flex-1"
+              [style.backgroundColor]="color"
+              [title]="color"
+            ></div>
+          }
+        } @else {
+          @for (color of store.colors(); track color.id) {
+            <div
+              class="flex-1"
+              [style.backgroundColor]="color.hex"
+              [title]="color.hex"
+            ></div>
+          }
+        }
+      </div>
+
+      <!-- Name Field -->
+      <div class="flex flex-col gap-2">
+        <label for="name" class="text-sm font-semibold text-gray-700"
+          >Name</label
+        >
+        <input
+          pInputText
+          id="name"
+          [(ngModel)]="name"
+          placeholder="e.g. Midnight Forest"
+          class="w-full !rounded-xl !border-gray-200 focus:!border-indigo-500 focus:!ring-1 focus:!ring-indigo-500"
+        />
+      </div>
+
+      <!-- Description Field -->
+      <div class="flex flex-col gap-2">
+        <label for="description" class="text-sm font-semibold text-gray-700"
+          >Description</label
+        >
+        <textarea
+          pTextarea
+          id="description"
+          [(ngModel)]="description"
+          [autoResize]="true"
+          rows="3"
+          placeholder="What is this palette for?"
+          class="w-full !rounded-xl !border-gray-200 focus:!border-indigo-500 focus:!ring-1 focus:!ring-indigo-500"
+        ></textarea>
+      </div>
+
+      <!-- Tags Field -->
+      <div class="flex flex-col gap-2">
+        <label for="tags" class="text-sm font-semibold text-gray-700"
+          >Tags (comma separated)</label
+        >
+        <input
+          pInputText
+          id="tags"
+          [(ngModel)]="tagsString"
+          placeholder="e.g. UI, dark, nature"
+          class="w-full !rounded-xl !border-gray-200 focus:!border-indigo-500 focus:!ring-1 focus:!ring-indigo-500"
+        />
+      </div>
+    </div>
+
+    <!-- Action Button -->
+    <div class="pt-4">
+      <p-button
+        [label]="store.editingPalette() ? 'Update Palette' : 'Save to Library'"
+        (onClick)="handleSave()"
+        styleClass="w-full !bg-indigo-600 !border-none !rounded-xl !py-3 !text-lg !font-bold hover:!bg-indigo-700 transition-colors shadow-lg shadow-indigo-100"
+      ></p-button>
+    </div>
+  </div>
+</p-dialog>

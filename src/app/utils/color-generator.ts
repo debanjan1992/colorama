@@ -1,18 +1,27 @@
 import chroma from 'chroma-js';
 import { APP_CONFIG } from '../config/app.config';
 import { COLOR_GENERATION_CONFIG } from '../config/color-generation.config';
+import { getContrastColor, getContrastRatio } from './color-utils';
 
 export interface ColorInput {
   hex: string;
   locked: boolean;
 }
 
+export interface GenerationOptions {
+  enforceAccessibility?: boolean;
+}
+
 /**
  * Generates a color palette based on current colors and locked states
  * @param current - Array of current color items with lock status
+ * @param options - Generation options
  * @returns Array of hex color strings for the palette
  */
-export function generatePalette(current: ColorInput[]): string[] {
+export function generatePalette(
+  current: ColorInput[],
+  options: GenerationOptions = {},
+): string[] {
   const lockedColors = current.filter((c) => c.locked).map((c) => c.hex);
   const count = current.length || APP_CONFIG.colors.defaultCount;
   const palette: string[] = new Array(count).fill('');
@@ -78,16 +87,27 @@ export function generatePalette(current: ColorInput[]): string[] {
     });
   };
 
-  // 4. Populate unlocked slots with diversity check
+  const isValid = (hex: string) => {
+    if (!isDistinct(hex, palette)) return false;
+
+    if (options.enforceAccessibility) {
+      const contrastRatio = getContrastRatio(getContrastColor(hex), hex);
+      return contrastRatio >= 4.5;
+    }
+
+    return true;
+  };
+
+  // 4. Populate unlocked slots with diversity and accessibility checks
   for (let i = 0; i < count; i++) {
     if (palette[i]) continue; // Skip locked
 
     let candidate = basePalette[i];
     let attempts = 0;
 
-    // Try to find a distinct color by jittering or randomizing
+    // Try to find a valid color by jittering or randomizing
     while (
-      !isDistinct(candidate, palette) &&
+      !isValid(candidate) &&
       attempts < COLOR_GENERATION_CONFIG.maxJitterAttempts
     ) {
       if (attempts < COLOR_GENERATION_CONFIG.jitterThreshold) {

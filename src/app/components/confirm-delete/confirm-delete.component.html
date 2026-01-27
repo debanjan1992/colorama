@@ -1,0 +1,50 @@
+<p-confirmDialog
+  #cd
+  [closable]="false"
+  [draggable]="false"
+  [style]="{ width: '500px' }"
+  styleClass="custom-confirm"
+>
+  <ng-template pTemplate="message" let-message>
+    <div class="flex items-start w-full gap-5 py-4">
+      <div
+        class="flex-shrink-0 w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mt-1"
+      >
+        <i class="pi pi-exclamation-triangle text-xl text-red-500"></i>
+      </div>
+      <div class="flex-1">
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Delete Palette</h3>
+        <p class="text-gray-600 text-[15px] leading-relaxed mb-4">
+          Are you sure you want to delete
+          <span class="font-bold text-gray-900">{{ message.header }}</span
+          >?
+        </p>
+
+        <div class="bg-gray-50 border border-gray-100 rounded-lg p-3">
+          <p class="text-xs text-gray-500 italic">
+            This action is permanent and cannot be undone.
+          </p>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div
+      class="flex items-center justify-end gap-3 w-full px-6 pb-6 bg-white rounded-b-3xl"
+    >
+      <button
+        (click)="cd.onReject()"
+        class="px-6 py-2.5 bg-white border border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all cursor-pointer outline-none focus:ring-2 focus:ring-gray-100 shadow-sm"
+      >
+        Cancel
+      </button>
+      <button
+        (click)="cd.onAccept()"
+        class="px-6 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all shadow-md shadow-red-100 cursor-pointer outline-none focus:ring-2 focus:ring-red-200"
+      >
+        Delete Palette
+      </button>
+    </div>
+  </ng-template>
+</p-confirmDialog>

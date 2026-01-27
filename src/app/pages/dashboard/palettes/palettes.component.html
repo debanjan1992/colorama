@@ -1,0 +1,44 @@
+<div class="space-y-6">
+  <app-confirm-delete></app-confirm-delete>
+  <app-save-modal></app-save-modal>
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">My Palettes</h1>
+      <p class="text-gray-500 text-sm">
+        Manage and organize your saved color combinations.
+      </p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @for (palette of savedPalettes(); track palette.id) {
+      <app-palette-item
+        [palette]="palette"
+        (delete)="deletePalette($event)"
+        (view)="viewPalette($event)"
+        (duplicate)="duplicatePalette($event)"
+      ></app-palette-item>
+    } @empty {
+      <div
+        class="col-span-full py-20 bg-white rounded-3xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center text-center"
+      >
+        <div
+          class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4"
+        >
+          <i class="pi pi-palette text-2xl text-gray-300"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-1">No palettes yet</h3>
+        <p class="text-sm text-gray-500 max-w-xs mb-6">
+          Start creating and saving your favorite color combinations to see them
+          here.
+        </p>
+        <a
+          routerLink="/generator"
+          class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-100"
+        >
+          Go to Generator
+        </a>
+      </div>
+    }
+  </div>
+</div>

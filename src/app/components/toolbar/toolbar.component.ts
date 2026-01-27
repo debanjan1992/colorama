@@ -1,15 +1,16 @@
 import { Component, inject, output } from '@angular/core';
+import { Router } from '@angular/router';
 import { ColorStore } from '../../store/color.store';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 
 export interface ToolbarAction {
-  icon: string;
+  icon: string | (() => string);
   tooltip: string;
   label?: string;
   action?: () => void;
   disabled?: () => boolean;
-  styleClass?: string;
+  styleClass?: string | (() => string);
 }
 
 export interface ToolbarSection {
@@ -26,10 +27,23 @@ export interface ToolbarSection {
 })
 export class ToolbarComponent {
   readonly store = inject(ColorStore);
+  private readonly router = inject(Router);
 
   exportPng = output<void>();
   copyLink = output<void>();
   toggleFullscreen = output<void>();
+
+  getIcon(action: ToolbarAction): string {
+    return typeof action.icon === 'function' ? action.icon() : action.icon;
+  }
+
+  getStyleClass(action: ToolbarAction): string {
+    const baseClass =
+      typeof action.styleClass === 'function'
+        ? action.styleClass()
+        : action.styleClass || '';
+    return `toolbar-btn ${baseClass} ${action.label ? 'btn-with-label' : ''}`;
+  }
 
   readonly sections: ToolbarSection[] = [
     {
@@ -40,6 +54,16 @@ export class ToolbarComponent {
           icon: 'pi pi-sparkles',
           tooltip: 'Generate (Spacebar)',
           action: () => this.store.generateColors(),
+        },
+        {
+          icon: () =>
+            this.store.enforceAccessibility()
+              ? 'pi pi-check-circle'
+              : 'pi pi-user',
+          tooltip: 'Accessible Mode (Enforce 4.5+ contrast)',
+          action: () => this.store.toggleAccessibility(),
+          styleClass: () =>
+            this.store.enforceAccessibility() ? '!text-indigo-600' : '',
         },
       ],
     },
@@ -81,18 +105,16 @@ export class ToolbarComponent {
         },
       ],
     },
-    // {
-    //   id: 'main',
-    //   actions: [
-    //     // { label: 'View', icon: 'pi pi-eye', tooltip: 'View palette' },
-    //     // { label: 'Export', icon: 'pi pi-upload', tooltip: 'Export palette' },
-    //     {
-    //       label: 'Save',
-    //       icon: 'pi pi-heart',
-    //       tooltip: 'Save to collections',
-    //       action: () => this.store.setSaveDialogOpen(true),
-    //     },
-    //   ],
-    // },
+    {
+      id: 'main',
+      actions: [
+        {
+          label: 'Save',
+          icon: 'pi pi-heart',
+          tooltip: 'Save to library',
+          action: () => this.store.setSaveDialogOpen(true),
+        },
+      ],
+    },
   ];
 }

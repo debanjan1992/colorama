@@ -9,13 +9,24 @@ import {
 import { ToolbarComponent } from '../../components/toolbar/toolbar.component';
 import { ColorStore } from '../../store/color.store';
 import { ColorPanelComponent } from '../../components/color-panel/color-panel.component';
+import { ExportModalComponent } from '../../components/export-modal/export-modal.component';
+import { SaveModalComponent } from '../../components/save-modal/save-modal.component';
 import { Tooltip } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
 import { ExportService } from '../../core/services/export.service';
+import { APP_CONFIG } from '../../config/app.config';
+import { HeaderComponent } from '../../components/header/header.component';
 
 @Component({
   standalone: true,
-  imports: [ColorPanelComponent, ToolbarComponent, Tooltip],
+  imports: [
+    ColorPanelComponent,
+    ToolbarComponent,
+    Tooltip,
+    ExportModalComponent,
+    SaveModalComponent,
+    HeaderComponent,
+  ],
   selector: 'app-generator',
   templateUrl: './generator.component.html',
   styleUrl: './generator.component.scss',
@@ -55,7 +66,7 @@ export class GeneratorComponent {
       this.messageService.add({
         severity: 'success',
         summary: 'Link copied to clipboard',
-        life: 2000,
+        life: APP_CONFIG.toast.life,
       });
     } catch (err) {
       console.error('Failed to copy link: ', err);
@@ -63,20 +74,26 @@ export class GeneratorComponent {
   }
 
   async exportAsPng() {
-    const colors = this.store.colors();
-
-    const result = await this.exportService.exportAsPng(colors);
-
-    if (result.success && result.blob) {
-      this.exportService.downloadImage(result.blob);
-    } else {
-      console.error('Failed to export palette:', result.error);
-    }
+    this.store.setExportDialogOpen(true);
   }
 
   @HostListener('window:keydown.space', ['$event'])
   handleSpace(event: Event) {
-    if (this.store.activeShadesPanelId()) return;
+    const target = event.target as HTMLElement;
+    const isInput = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].includes(
+      target.tagName,
+    );
+    const isDialogueOpen =
+      this.store.isSaveDialogOpen() || this.store.isExportDialogOpen();
+
+    if (
+      this.store.activeShadesPanelId() ||
+      isInput ||
+      isDialogueOpen ||
+      target.isContentEditable
+    ) {
+      return;
+    }
 
     event.preventDefault();
     this.store.generateColors();

@@ -2,6 +2,7 @@
 
 :host {
   @apply block flex-1 cursor-pointer overflow-hidden;
+  height: 100%;
 }
 
 // Smooth color transition when palette changes

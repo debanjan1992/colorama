@@ -20,6 +20,7 @@ import {
 } from '../../utils/color-utils';
 import { Tooltip } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
+import { APP_CONFIG } from '../../config/app.config';
 
 @Component({
   selector: 'app-color-panel',
@@ -124,8 +125,8 @@ export class ColorPanelComponent {
       await navigator.clipboard.writeText(hex);
       this.messageService.add({
         severity: 'success',
-        summary: `Shade ${hex.toUpperCase()} applied and copied`,
-        life: 2000,
+        summary: `Shade applied and copied`,
+        life: APP_CONFIG.toast.life,
       });
     } catch (err) {
       console.error('Failed to copy: ', err);
@@ -138,8 +139,8 @@ export class ColorPanelComponent {
       await navigator.clipboard.writeText(color);
       this.messageService.add({
         severity: 'success',
-        summary: `Color ${color.toUpperCase()} copied`,
-        life: 2000,
+        summary: `Color copied`,
+        life: APP_CONFIG.toast.life,
       });
     } catch (err) {
       console.error('Failed to copy: ', err);
@@ -152,7 +153,7 @@ export class ColorPanelComponent {
       this.messageService.add({
         severity: 'success',
         summary: `Shade ${hex.toUpperCase()} copied`,
-        life: 2000,
+        life: APP_CONFIG.toast.life,
       });
     } catch (err) {
       console.error('Failed to copy: ', err);
@@ -165,8 +166,8 @@ export class ColorPanelComponent {
       await navigator.clipboard.writeText(rgb);
       this.messageService.add({
         severity: 'success',
-        summary: `RGB ${rgb} copied`,
-        life: 2000,
+        summary: `Color copied`,
+        life: APP_CONFIG.toast.life,
       });
     } catch (err) {
       console.error('Failed to copy: ', err);
@@ -179,8 +180,8 @@ export class ColorPanelComponent {
       await navigator.clipboard.writeText(hsl);
       this.messageService.add({
         severity: 'success',
-        summary: `HSL ${hsl} copied`,
-        life: 2000,
+        summary: `Color copied`,
+        life: APP_CONFIG.toast.life,
       });
     } catch (err) {
       console.error('Failed to copy: ', err);

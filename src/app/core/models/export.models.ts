@@ -6,6 +6,7 @@ export interface ExportOptions {
   includeFooter: boolean;
   footerHeight?: number;
   footerText?: string;
+  colorSpace?: 'HEX' | 'RGB' | 'HSL' | 'LAB';
 }
 
 export interface ExportResult {

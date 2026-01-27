@@ -78,4 +78,11 @@ export class ColorToolsComponent {
       alwaysVisible: this.item().locked,
     },
   ]);
+
+  getToolStyles(tool: ToolButton): Record<string, string> {
+    return {
+      color: this.textColor(),
+      ...(tool.customStyle || {}),
+    };
+  }
 }

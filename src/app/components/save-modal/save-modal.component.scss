@@ -1,0 +1,30 @@
+@reference "tailwindcss";
+
+:host ::ng-deep {
+  .save-dialog {
+    .p-dialog-header {
+      @apply !pb-2;
+
+      .p-dialog-title {
+        @apply !text-xl !font-bold !text-gray-900;
+      }
+    }
+
+    .p-dialog-content {
+      @apply !px-6 !pb-6;
+    }
+
+    .p-inputtext,
+    .p-textarea {
+      @apply !transition-all;
+    }
+
+    .p-button {
+      @apply !shadow-none;
+
+      &:hover {
+        @apply !shadow-lg !shadow-indigo-100;
+      }
+    }
+  }
+}

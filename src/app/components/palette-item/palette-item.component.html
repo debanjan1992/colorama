@@ -1,0 +1,87 @@
+<div
+  class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex flex-col h-full"
+>
+  <!-- Color Strip -->
+  <div
+    class="h-32 flex cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-inset"
+    (click)="view.emit(palette())"
+    (keydown.enter)="view.emit(palette())"
+    (keydown.space)="view.emit(palette())"
+    tabindex="0"
+    role="button"
+    aria-label="View Palette Details"
+  >
+    @for (color of palette().colors; track $index) {
+      <div
+        class="flex-1 h-full flex items-center justify-center overflow-hidden transition-[flex] duration-500 ease-out hover:flex-[2.5] hover:z-20 group/color outline-none cursor-pointer focus-visible:z-30 focus-visible:ring-inset focus-visible:ring-2 focus-visible:ring-white/40"
+        [style.backgroundColor]="color"
+        [title]="color + ' - Click to copy'"
+        (click)="copyColor($event, color)"
+        (keydown.enter)="copyColor($event, color)"
+        (keydown.space)="copyColor($event, color)"
+        tabindex="0"
+        role="button"
+        [aria-label]="'Copy color ' + color"
+      >
+        <span
+          class="opacity-0 text-lg font-black font-mono transition-opacity duration-300 group-hover/color:opacity-100 pointer-events-none select-none"
+          [style.color]="getContrastColor(color)"
+        >
+          {{ formatHex(color) }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Content -->
+  <div class="p-4 bg-white flex-1 flex flex-col">
+    <div class="flex items-center justify-between mb-1">
+      <h3 class="font-bold text-gray-900 truncate pr-2">
+        {{ palette().name }}
+      </h3>
+      <span
+        class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-1 rounded whitespace-nowrap"
+      >
+        {{ palette().colors.length }} Colors
+      </span>
+    </div>
+
+    @if (palette().description) {
+      <p class="text-xs text-gray-500 line-clamp-2 mb-2">
+        {{ palette().description }}
+      </p>
+    }
+
+    <div class="mt-auto pt-2 flex items-center justify-between">
+      <p class="text-[10px] font-medium text-gray-400">
+        Saved {{ formatDate(palette().timestamp) }}
+      </p>
+
+      <div
+        class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <button
+          (click)="view.emit(palette())"
+          class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all cursor-pointer"
+          title="View Palette"
+        >
+          <i class="pi pi-external-link"></i>
+        </button>
+
+        <p-menu
+          #menu
+          [model]="menuItems"
+          [popup]="true"
+          appendTo="body"
+        ></p-menu>
+        <button
+          (click)="menu.toggle($event)"
+          class="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all cursor-pointer"
+          title="More Options"
+        >
+          <i class="pi pi-ellipsis-v"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

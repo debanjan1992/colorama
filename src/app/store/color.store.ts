@@ -32,12 +32,18 @@ const initialState: {
   colors: ColorItem[];
   activeShadesPanelId: string | null;
   isSaveDialogOpen: boolean;
+  isExportDialogOpen: boolean;
+  enforceAccessibility: boolean;
+  editingPalette: SavedPalette | null;
   history: ColorItem[][];
   future: ColorItem[][];
 } = {
   colors: [],
   activeShadesPanelId: null,
   isSaveDialogOpen: false,
+  isExportDialogOpen: false,
+  enforceAccessibility: false,
+  editingPalette: null,
   history: [],
   future: [],
 };
@@ -110,7 +116,9 @@ export const ColorStore = signalStore(
 
         pushHistory();
         const current = store.colors();
-        const palette = generatePalette(current);
+        const palette = generatePalette(current, {
+          enforceAccessibility: store.enforceAccessibility(),
+        });
         let newColors: ColorItem[] = [];
 
         if (current.length === 0) {
@@ -171,7 +179,7 @@ export const ColorStore = signalStore(
         messageService.add({
           severity: 'secondary',
           summary: 'Palette restored',
-          life: 2000,
+          life: APP_CONFIG.toast.life,
         });
       },
 
@@ -199,7 +207,7 @@ export const ColorStore = signalStore(
         messageService.add({
           severity: 'secondary',
           summary: 'Next palette applied',
-          life: 2000,
+          life: APP_CONFIG.toast.life,
         });
       },
 
@@ -245,8 +253,15 @@ export const ColorStore = signalStore(
         updateUrl(newColors);
       },
 
-      setSaveDialogOpen(open: boolean): void {
-        patchState(store, { isSaveDialogOpen: open });
+      setExportDialogOpen(open: boolean): void {
+        patchState(store, { isExportDialogOpen: open });
+      },
+
+      setSaveDialogOpen(open: boolean, palette?: SavedPalette): void {
+        patchState(store, {
+          isSaveDialogOpen: open,
+          editingPalette: open ? palette || null : null,
+        });
       },
 
       savePalette(metadata: {
@@ -270,7 +285,33 @@ export const ColorStore = signalStore(
           'saved_palettes',
           JSON.stringify([newPalette, ...palettes]),
         );
-        patchState(store, { isSaveDialogOpen: false });
+        patchState(store, { isSaveDialogOpen: false, editingPalette: null });
+      },
+
+      updatePalette(
+        id: string,
+        metadata: {
+          name: string;
+          description: string;
+          tags: string[];
+        },
+      ): void {
+        const currentPalettesJson = localStorage.getItem('saved_palettes');
+        if (!currentPalettesJson) return;
+
+        const palettes: SavedPalette[] = JSON.parse(currentPalettesJson);
+        const index = palettes.findIndex((p) => p.id === id);
+
+        if (index !== -1) {
+          palettes[index] = {
+            ...palettes[index],
+            ...metadata,
+          };
+
+          localStorage.setItem('saved_palettes', JSON.stringify(palettes));
+        }
+
+        patchState(store, { isSaveDialogOpen: false, editingPalette: null });
       },
 
       reorderColors(
@@ -289,6 +330,28 @@ export const ColorStore = signalStore(
 
         patchState(store, { colors });
         updateUrl(colors);
+      },
+
+      toggleAccessibility(): void {
+        patchState(store, {
+          enforceAccessibility: !store.enforceAccessibility(),
+        });
+
+        // Regenerate current colors if enforcement is turned ON
+        if (store.enforceAccessibility()) {
+          this.generateColors();
+          messageService.add({
+            severity: 'success',
+            summary: 'Accessible Mode ON',
+            life: APP_CONFIG.toast.life,
+          });
+        } else {
+          messageService.add({
+            severity: 'secondary',
+            summary: 'Accessible Mode OFF',
+            life: APP_CONFIG.toast.life,
+          });
+        }
       },
     };
   }),

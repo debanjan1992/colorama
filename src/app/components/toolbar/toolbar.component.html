@@ -1,27 +1,17 @@
 <div
-  class="flex items-center justify-between h-14 bg-white border-b border-gray-200 px-6"
+  class="flex items-center justify-center md:justify-between h-14 bg-white border-b border-gray-200 px-6"
 >
-  <!-- Left Section (Logo + Info) -->
-  <div class="flex items-center gap-6">
-    <div class="flex items-center gap-2">
-      <i class="pi pi-palette text-indigo-600 text-xl font-bold"></i>
-      <h1 class="text-gray-900 text-xl font-bold tracking-tight m-0">
-        Colorama
-      </h1>
-    </div>
-    <span
-      class="text-sm text-gray-500 font-medium tracking-tight hidden lg:block"
-      >Press the spacebar to generate color palettes!</span
-    >
-  </div>
+  <span class="text-sm text-gray-500 font-medium tracking-tight hidden lg:block"
+    >Press the spacebar to generate color palettes!</span
+  >
 
   <!-- Right Section -->
-  <div class="flex items-center gap-1">
+  <div class="flex items-center justify-center md:justify-end gap-1">
     @for (section of sections; track section.id; let lastSection = $last) {
       <div class="flex items-center gap-0.5">
         @for (action of section.actions; track action.tooltip) {
           <p-button
-            [icon]="action.icon"
+            [icon]="getIcon(action)"
             [label]="action.label"
             [text]="true"
             severity="secondary"
@@ -29,9 +19,7 @@
             tooltipPosition="bottom"
             [disabled]="action.disabled ? action.disabled() : false"
             (onClick)="action.action ? action.action() : null"
-            styleClass="toolbar-btn {{ action.styleClass || '' }} {{
-              action.label ? 'btn-with-label' : ''
-            }}"
+            [styleClass]="getStyleClass(action)"
           ></p-button>
         }
       </div>

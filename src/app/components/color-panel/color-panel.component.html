@@ -1,5 +1,5 @@
 <div
-  class="h-full w-full flex flex-col justify-center md:justify-end items-start md:items-center relative pl-6 md:pl-0 md:pb-16 group outline-none"
+  class="h-full w-full flex flex-col justify-center md:justify-end items-start md:items-center relative pb-0 pl-4 md:pl-0 md:pb-8 group outline-none"
   [style.background-color]="color()"
   [style.color]="textColor()"
   (click)="copyColor()"
@@ -9,7 +9,7 @@
 >
   @if (showTools()) {
     <div
-      class="absolute bottom-4 left-1/2 -translate-x-1/2 md:bottom-auto md:left-4 md:top-4 md:translate-x-0 z-10 flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      class="absolute hidden md:flex top-2 right-2 md:left-2 md:right-auto z-10 items-center gap-1.5 px-2 py-1 rounded-full bg-black/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
       [pTooltip]="'Contrast Ratio: ' + contrastRatio().toFixed(2) + ':1'"
       tooltipPosition="top"
     >
@@ -24,27 +24,27 @@
         >{{ wcagLevel() }}</span
       >
     </div>
-
-    <app-color-tools
-      class="absolute right-4 top-1/2 -translate-y-1/2 md:relative md:top-auto md:right-auto md:translate-y-0 md:mb-6"
-      [item]="item()"
-      [textColor]="textColor()"
-      (remove)="delete.emit(item().id)"
-      (toggleShades)="toggleShades()"
-      (copyHex)="copyColor()"
-      (toggleLock)="lock.emit(item().id)"
-      (allowDrag)="allowDrag.emit($event)"
-    ></app-color-tools>
+    <div class="absolute md:relative right-2 md:right-auto">
+      <app-color-tools
+        [item]="item()"
+        [textColor]="textColor()"
+        (remove)="delete.emit(item().id)"
+        (toggleShades)="toggleShades()"
+        (copyHex)="copyColor()"
+        (toggleLock)="lock.emit(item().id)"
+        (allowDrag)="allowDrag.emit($event)"
+      ></app-color-tools>
+    </div>
   }
 
   <div
-    class="text-left md:text-center md:mb-8 transition-transform duration-300"
+    class="text-left md:text-center md:mt-6 transition-transform duration-300"
   >
     <h2 class="uppercase text-xl md:text-3xl font-bold m-0 tracking-widest">
       {{ colorDisplay() }}
     </h2>
     <span
-      class="block text-xs lg:text-sm font-medium mt-1 md:mt-2 opacity-60 tracking-wider"
+      class="hidden md:block text-xs lg:text-sm font-medium mt-1 md:mt-2 opacity-60 tracking-wider"
       >{{ colorName() }}</span
     >
     <span
