@@ -40,6 +40,10 @@ export class GeneratorComponent {
 
   isFullscreen = signal(false);
 
+  constructor() {
+    this.store.syncUrl();
+  }
+
   async toggleFullscreen() {
     if (!this.isFullscreen()) {
       try {

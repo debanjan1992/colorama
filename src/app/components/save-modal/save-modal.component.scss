@@ -3,27 +3,33 @@
 :host ::ng-deep {
   .save-dialog {
     .p-dialog-header {
-      @apply !pb-2;
+      padding-bottom: 0.5rem !important;
 
       .p-dialog-title {
-        @apply !text-xl !font-bold !text-gray-900;
+        font-size: 1.25rem !important;
+        font-weight: 700 !important;
+        color: #111827 !important; /* gray-900 */
       }
     }
 
     .p-dialog-content {
-      @apply !px-6 !pb-6;
+      padding-left: 1.5rem !important;
+      padding-right: 1.5rem !important;
+      padding-bottom: 1.5rem !important;
     }
 
     .p-inputtext,
     .p-textarea {
-      @apply !transition-all;
+      transition: all 0.2s ease !important;
     }
 
     .p-button {
-      @apply !shadow-none;
+      box-shadow: none !important;
 
       &:hover {
-        @apply !shadow-lg !shadow-indigo-100;
+        box-shadow:
+          0 10px 15px -3px #e0e7ff,
+          0 4px 6px -4px #e0e7ff !important; /* shadow-lg shadow-indigo-100 */
       }
     }
   }

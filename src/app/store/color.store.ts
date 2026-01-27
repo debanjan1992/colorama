@@ -60,14 +60,16 @@ export const ColorStore = signalStore(
       colors.map((c) => c.hex.replace('#', '')).join('-');
 
     const updateUrl = (colors: ColorItem[]) => {
+      // Only update URL if we are on the generator page
+      if (!router.url.includes('/generator')) return;
+
       const hexList = getHexCodesFromColors(colors);
-      const currentParams = route.snapshot.queryParamMap.get('colors');
+      const urlTree = router.parseUrl(router.url);
+      const currentParams = urlTree.queryParams['colors'];
 
       if (hexList !== currentParams) {
-        router.navigate([], {
-          relativeTo: route,
-          queryParams: { colors: hexList },
-          queryParamsHandling: 'merge',
+        urlTree.queryParams['colors'] = hexList;
+        router.navigateByUrl(urlTree, {
           replaceUrl: false,
         });
       }
@@ -109,6 +111,10 @@ export const ColorStore = signalStore(
         } else if (store.colors().length === 0) {
           this.generateColors();
         }
+      },
+
+      syncUrl(): void {
+        updateUrl(store.colors());
       },
 
       generateColors(): void {
@@ -297,8 +303,6 @@ export const ColorStore = signalStore(
         },
       ): void {
         const currentPalettesJson = localStorage.getItem('saved_palettes');
-        if (!currentPalettesJson) return;
-
         const palettes: SavedPalette[] = JSON.parse(currentPalettesJson);
         const index = palettes.findIndex((p) => p.id === id);
 

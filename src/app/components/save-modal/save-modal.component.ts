@@ -1,4 +1,5 @@
 import { Component, inject, signal, effect } from '@angular/core';
+import { ColorPickerModule } from 'primeng/colorpicker';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Dialog } from 'primeng/dialog';
@@ -10,7 +11,15 @@ import { ColorStore } from '../../store/color.store';
 @Component({
   selector: 'app-save-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, Dialog, Button, InputText, Textarea],
+  imports: [
+    CommonModule,
+    FormsModule,
+    Dialog,
+    Button,
+    InputText,
+    Textarea,
+    ColorPickerModule,
+  ],
   templateUrl: './save-modal.component.html',
   styleUrl: './save-modal.component.scss',
 })
@@ -20,6 +29,7 @@ export class SaveModalComponent {
   name = signal('');
   description = signal('');
   tagsString = signal('');
+  colors = signal<string[]>([]);
 
   constructor() {
     effect(() => {
@@ -28,6 +38,7 @@ export class SaveModalComponent {
         this.name.set(editing.name);
         this.description.set(editing.description);
         this.tagsString.set(editing.tags.join(', '));
+        this.colors.set([...editing.colors]); // Clone array
       } else {
         this.resetFields();
       }
@@ -42,6 +53,7 @@ export class SaveModalComponent {
         .split(',')
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0),
+      colors: this.colors(),
     };
 
     const editing = this.store.editingPalette();
@@ -58,6 +70,16 @@ export class SaveModalComponent {
     this.name.set('');
     this.description.set('');
     this.tagsString.set('');
+    this.colors.set([]);
+  }
+
+  updateColor(index: number, newColor: any) {
+    if (!newColor) return;
+    const currentCallback = this.colors();
+    const updated = [...currentCallback];
+    const colorStr = newColor.toString();
+    updated[index] = colorStr.startsWith('#') ? colorStr : `#${colorStr}`;
+    this.colors.set(updated);
   }
 
   close() {
