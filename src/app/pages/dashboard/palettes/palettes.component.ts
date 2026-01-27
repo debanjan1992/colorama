@@ -5,7 +5,7 @@ import { SaveModalComponent } from '../../../components/save-modal/save-modal.co
 import { SavedPalette, ColorStore } from '../../../store/color.store';
 import { Router } from '@angular/router';
 
-import { ConfirmDeleteComponent } from '../../../components/confirm-delete/confirm-delete.component';
+import { ConfirmationDialogComponent } from '../../../components/confirmation-dialog/confirmation-dialog.component';
 import { ConfirmationService } from 'primeng/api';
 
 @Component({
@@ -15,7 +15,7 @@ import { ConfirmationService } from 'primeng/api';
     CommonModule,
     PaletteItemComponent,
     SaveModalComponent,
-    ConfirmDeleteComponent,
+    ConfirmationDialogComponent,
   ],
   templateUrl: './palettes.component.html',
 })
@@ -54,10 +54,10 @@ export class DashboardPalettesComponent implements OnInit {
   deletePalette(id: string) {
     const palette = this.savedPalettes().find((p) => p.id === id);
     this.confirmationService.confirm({
-      message:
-        'Are you sure you want to delete this palette? This action cannot be undone.',
       header: palette?.name || 'Delete Confirmation',
-      icon: 'pi pi-exclamation-triangle',
+      message: 'Are you sure you want to delete this palette?',
+      acceptLabel: 'Delete Palette',
+      rejectLabel: 'Cancel',
       accept: () => {
         const current = this.savedPalettes();
         const updated = current.filter((p) => p.id !== id);
