@@ -1,10 +1,17 @@
-import { Component, inject, input, output } from '@angular/core';
+import {
+  Component,
+  inject,
+  input,
+  output,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ColorStore, SavedPalette } from '../../../../store/color.store';
-import { MessageService, MenuItem } from 'primeng/api';
+import { ColorStore } from '../../../../store/color.store';
+import { SavedPalette } from '../../../../core/models/color.models';
+import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
-import { APP_CONFIG } from '../../../../config/app.config';
-import { getContrastColor } from '../../../../utils/color-utils';
+import { ClipboardService } from '../../../../core/services/clipboard.service';
+import { ColorService } from '../../../../core/services/color.service';
 
 @Component({
   selector: 'app-palette-item',
@@ -12,10 +19,12 @@ import { getContrastColor } from '../../../../utils/color-utils';
   imports: [CommonModule, Menu],
   templateUrl: './palette-item.component.html',
   styleUrl: './palette-item.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaletteItemComponent {
-  private readonly messageService = inject(MessageService);
   private readonly store = inject(ColorStore);
+  private readonly clipboardService = inject(ClipboardService);
+  private readonly colorService = inject(ColorService);
 
   palette = input.required<SavedPalette>();
 
@@ -51,7 +60,7 @@ export class PaletteItemComponent {
   ];
 
   getContrastColor(hex: string): 'black' | 'white' {
-    return getContrastColor(hex);
+    return this.colorService.getContrastColor(hex);
   }
 
   formatHex(hex: string): string {
@@ -60,16 +69,10 @@ export class PaletteItemComponent {
 
   async copyColor(event: Event, hex: string) {
     event.stopPropagation();
-    try {
-      await navigator.clipboard.writeText(hex);
-      this.messageService.add({
-        severity: 'success',
-        summary: `Color ${hex.toUpperCase()} copied`,
-        life: APP_CONFIG.toast.life,
-      });
-    } catch (err) {
-      console.error('Failed to copy color: ', err);
-    }
+    await this.clipboardService.copyText(
+      hex,
+      `Color ${hex.toUpperCase()} copied`,
+    );
   }
 
   formatDate(timestamp: number): string {

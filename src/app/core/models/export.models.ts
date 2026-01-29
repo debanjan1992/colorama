@@ -1,4 +1,4 @@
-import { ColorItem } from '../../store/color.store';
+import { ColorItem } from './color.models';
 
 export interface ExportOptions {
   width: number;

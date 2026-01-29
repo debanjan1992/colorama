@@ -5,28 +5,14 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import chroma from 'chroma-js';
 import { inject, DestroyRef } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { generatePalette } from '../utils/color-generator';
 import { APP_CONFIG } from '../config/app.config';
-
-export interface ColorItem {
-  id: string;
-  hex: string;
-  locked: boolean;
-}
-
-export interface SavedPalette {
-  id: string;
-  name: string;
-  description: string;
-  tags: string[];
-  colors: string[];
-  timestamp: number;
-}
+import { ColorItem, SavedPalette } from '../core/models/color.models';
+import { PaletteService } from '../core/services/palette.service';
+import { ColorService } from '../core/services/color.service';
 
 const initialState: {
   colors: ColorItem[];
@@ -54,7 +40,8 @@ export const ColorStore = signalStore(
   withMethods((store) => {
     const messageService = inject(MessageService);
     const router = inject(Router);
-    const route = inject(ActivatedRoute);
+    const paletteService = inject(PaletteService);
+    const colorService = inject(ColorService);
 
     const getHexCodesFromColors = (colors: ColorItem[]) =>
       colors.map((c) => c.hex.replace('#', '')).join('-');
@@ -122,7 +109,7 @@ export const ColorStore = signalStore(
 
         pushHistory();
         const current = store.colors();
-        const palette = generatePalette(current, {
+        const palette = colorService.generatePalette(current, {
           enforceAccessibility: store.enforceAccessibility(),
         });
         let newColors: ColorItem[] = [];
@@ -243,7 +230,7 @@ export const ColorStore = signalStore(
         if (!c1 || !c2) return;
 
         pushHistory();
-        const mixedHex = chroma.mix(c1.hex, c2.hex, 0.5, 'lab').hex();
+        const mixedHex = colorService.mixColors(c1.hex, c2.hex);
         const newItem: ColorItem = {
           id: crypto.randomUUID(),
           hex: mixedHex,
@@ -275,11 +262,6 @@ export const ColorStore = signalStore(
         description: string;
         tags: string[];
       }): void {
-        const currentPalettesJson = localStorage.getItem('saved_palettes');
-        const palettes: SavedPalette[] = currentPalettesJson
-          ? JSON.parse(currentPalettesJson)
-          : [];
-
         const newPalette: SavedPalette = {
           id: crypto.randomUUID(),
           ...metadata,
@@ -287,10 +269,7 @@ export const ColorStore = signalStore(
           timestamp: Date.now(),
         };
 
-        localStorage.setItem(
-          'saved_palettes',
-          JSON.stringify([newPalette, ...palettes]),
-        );
+        paletteService.savePalette(newPalette);
         patchState(store, { isSaveDialogOpen: false, editingPalette: null });
       },
 
@@ -302,19 +281,7 @@ export const ColorStore = signalStore(
           tags: string[];
         },
       ): void {
-        const currentPalettesJson = localStorage.getItem('saved_palettes');
-        const palettes: SavedPalette[] = JSON.parse(currentPalettesJson);
-        const index = palettes.findIndex((p) => p.id === id);
-
-        if (index !== -1) {
-          palettes[index] = {
-            ...palettes[index],
-            ...metadata,
-          };
-
-          localStorage.setItem('saved_palettes', JSON.stringify(palettes));
-        }
-
+        paletteService.updatePalette(id, metadata);
         patchState(store, { isSaveDialogOpen: false, editingPalette: null });
       },
 

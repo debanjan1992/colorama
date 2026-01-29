@@ -1,14 +1,16 @@
-import { Injectable } from '@angular/core';
-import { ColorItem } from '../../store/color.store';
+import { Injectable, inject } from '@angular/core';
+import { ColorItem } from '../models/color.models';
 import chroma from 'chroma-js';
 import { ExportOptions, ExportResult } from '../models/export.models';
-import { getContrastColor } from '../../utils/color-utils';
 import { APP_CONFIG } from '../../config/app.config';
+import { ColorService } from './color.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExportService {
+  private readonly colorService = inject(ColorService);
+
   /**
    * Exports a color palette as a PNG image
    * @param colors - Array of color items to export
@@ -100,7 +102,7 @@ export class ExportService {
       ctx.fillStyle = colorItem.hex;
       ctx.fillRect(x, 0, panelWidth, config.height);
 
-      const textColor = getContrastColor(colorItem.hex);
+      const textColor = this.colorService.getContrastColor(colorItem.hex);
       ctx.fillStyle = textColor;
       ctx.font = 'bold 36px Arial';
       ctx.textAlign = 'left';

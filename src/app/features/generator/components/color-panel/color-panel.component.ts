@@ -9,18 +9,11 @@ import {
 } from '@angular/core';
 import { ColorToolsComponent } from '../color-tools/color-tools.component';
 import namer from 'color-namer';
-import chroma from 'chroma-js';
-import { ColorItem, ColorStore } from '../../../../store/color.store';
-import {
-  getContrastColor,
-  hexToRgb,
-  hexToHsl,
-  getContrastRatio,
-  getWCAGLevel,
-} from '../../../../utils/color-utils';
+import { ColorStore } from '../../../../store/color.store';
+import { ColorItem } from '../../../../core/models/color.models';
 import { Tooltip } from 'primeng/tooltip';
-import { MessageService } from 'primeng/api';
-import { APP_CONFIG } from '../../../../config/app.config';
+import { ClipboardService } from '../../../../core/services/clipboard.service';
+import { ColorService } from '../../../../core/services/color.service';
 
 @Component({
   selector: 'app-color-panel',
@@ -32,7 +25,8 @@ import { APP_CONFIG } from '../../../../config/app.config';
 export class ColorPanelComponent {
   readonly store = inject(ColorStore);
   private readonly el = inject(ElementRef);
-  private readonly messageService = inject(MessageService);
+  private readonly clipboardService = inject(ClipboardService);
+  private readonly colorService = inject(ColorService);
 
   item = input.required<ColorItem>();
 
@@ -54,7 +48,7 @@ export class ColorPanelComponent {
   });
 
   textColor = computed(() => {
-    return getContrastColor(this.color());
+    return this.colorService.getContrastColor(this.color());
   });
 
   colorDisplay = computed(() => {
@@ -62,37 +56,23 @@ export class ColorPanelComponent {
   });
 
   rgbDisplay = computed(() => {
-    return hexToRgb(this.color());
+    return this.colorService.hexToRgb(this.color());
   });
 
   hslDisplay = computed(() => {
-    return hexToHsl(this.color());
+    return this.colorService.hexToHsl(this.color());
   });
 
   contrastRatio = computed(() => {
-    return getContrastRatio(this.textColor(), this.color());
+    return this.colorService.getContrastRatio(this.textColor(), this.color());
   });
 
   wcagLevel = computed(() => {
-    return getWCAGLevel(this.contrastRatio());
+    return this.colorService.getWCAGLevel(this.contrastRatio());
   });
 
   shades = computed(() => {
-    const color = this.color();
-    const l = chroma(color).get('lab.l') / 100;
-    const count = 33;
-    const colorIndex = Math.round(l * (count - 1));
-
-    const shadesBefore = chroma
-      .scale(['black', color])
-      .mode('lab')
-      .colors(colorIndex + 1);
-    const shadesAfter = chroma
-      .scale([color, 'white'])
-      .mode('lab')
-      .colors(count - colorIndex);
-
-    return [...shadesBefore.slice(0, -1), ...shadesAfter];
+    return this.colorService.generateShades(this.color());
   });
 
   @HostListener('document:click', ['$event'])
@@ -121,78 +101,36 @@ export class ColorPanelComponent {
     this.store.updateColor(this.item().id, hex);
     this.store.setActiveShadesPanel(null);
 
-    try {
-      await navigator.clipboard.writeText(hex);
-      this.messageService.add({
-        severity: 'success',
-        summary: `Shade applied and copied`,
-        life: APP_CONFIG.toast.life,
-      });
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
+    await this.clipboardService.copyText(hex, `Shade applied and copied`);
   }
 
   async copyColor() {
-    try {
-      const color = this.color();
-      await navigator.clipboard.writeText(color);
-      this.messageService.add({
-        severity: 'success',
-        summary: `Color copied`,
-        life: APP_CONFIG.toast.life,
-      });
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
+    const color = this.color();
+    await this.clipboardService.copyText(color, `Color copied`);
   }
 
   async copyShade(hex: string) {
-    try {
-      await navigator.clipboard.writeText(hex);
-      this.messageService.add({
-        severity: 'success',
-        summary: `Shade ${hex.toUpperCase()} copied`,
-        life: APP_CONFIG.toast.life,
-      });
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
+    await this.clipboardService.copyText(
+      hex,
+      `Shade ${hex.toUpperCase()} copied`,
+    );
   }
 
   async copyRgb() {
-    try {
-      const rgb = hexToRgb(this.color());
-      await navigator.clipboard.writeText(rgb);
-      this.messageService.add({
-        severity: 'success',
-        summary: `Color copied`,
-        life: APP_CONFIG.toast.life,
-      });
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
+    const rgb = this.colorService.hexToRgb(this.color());
+    await this.clipboardService.copyText(rgb, `Color copied`);
   }
 
   async copyHsl() {
-    try {
-      const hsl = hexToHsl(this.color());
-      await navigator.clipboard.writeText(hsl);
-      this.messageService.add({
-        severity: 'success',
-        summary: `Color copied`,
-        life: APP_CONFIG.toast.life,
-      });
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
+    const hsl = this.colorService.hexToHsl(this.color());
+    await this.clipboardService.copyText(hsl, `Color copied`);
   }
 
   getDotColor(hex: string): string {
-    return chroma(hex).luminance() > 0.5 ? 'black' : 'white';
+    return this.colorService.getContrastColor(hex);
   }
 
   getContrastColor(hex: string): 'black' | 'white' {
-    return getContrastColor(hex);
+    return this.colorService.getContrastColor(hex);
   }
 }

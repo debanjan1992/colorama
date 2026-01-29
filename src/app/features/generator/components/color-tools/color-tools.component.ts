@@ -1,6 +1,7 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ColorItem, ColorStore } from '../../../../store/color.store';
+import { ColorStore } from '../../../../store/color.store';
+import { ColorItem } from '../../../../core/models/color.models';
 
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
