@@ -1,10 +1,10 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ColorItem, ColorStore } from '../../store/color.store';
+import { ColorItem, ColorStore } from '../../../../store/color.store';
 
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
-import { APP_CONFIG } from '../../config/app.config';
+import { APP_CONFIG } from '../../../../config/app.config';
 
 interface ToolButton {
   icon: string;

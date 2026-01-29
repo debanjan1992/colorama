@@ -10,7 +10,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class HeaderComponent {
   navItems = [
-    { label: 'Generator', route: '/generator', icon: 'pi pi-palette' },
+    {
+      label: 'Generator',
+      route: '/generator',
+      icon: 'pi pi-palette',
+      preserveParams: true,
+    },
     { label: 'Dashboard', route: '/dashboard', icon: 'pi pi-home' },
     {
       label: 'Contact',

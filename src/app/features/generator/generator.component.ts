@@ -6,10 +6,10 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { ToolbarComponent } from '../../components/toolbar/toolbar.component';
+import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { ColorStore } from '../../store/color.store';
-import { ColorPanelComponent } from '../../components/color-panel/color-panel.component';
-import { ExportModalComponent } from '../../components/export-modal/export-modal.component';
+import { ColorPanelComponent } from './components/color-panel/color-panel.component';
+import { ExportModalComponent } from './components/export-modal/export-modal.component';
 import { SaveModalComponent } from '../../components/save-modal/save-modal.component';
 import { Tooltip } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';

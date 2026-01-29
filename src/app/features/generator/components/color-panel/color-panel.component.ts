@@ -10,17 +10,17 @@ import {
 import { ColorToolsComponent } from '../color-tools/color-tools.component';
 import namer from 'color-namer';
 import chroma from 'chroma-js';
-import { ColorItem, ColorStore } from '../../store/color.store';
+import { ColorItem, ColorStore } from '../../../../store/color.store';
 import {
   getContrastColor,
   hexToRgb,
   hexToHsl,
   getContrastRatio,
   getWCAGLevel,
-} from '../../utils/color-utils';
+} from '../../../../utils/color-utils';
 import { Tooltip } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
-import { APP_CONFIG } from '../../config/app.config';
+import { APP_CONFIG } from '../../../../config/app.config';
 
 @Component({
   selector: 'app-color-panel',

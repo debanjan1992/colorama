@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { GeneratorComponent } from './pages/generator/generator.component';
+import { GeneratorComponent } from './features/generator/generator.component';
 
 export const appRoutes: Route[] = [
   {
@@ -9,21 +9,21 @@ export const appRoutes: Route[] = [
   {
     path: 'dashboard',
     loadComponent: () =>
-      import('./pages/dashboard/dashboard.component').then(
+      import('./features/dashboard/dashboard.component').then(
         (m) => m.DashboardComponent,
       ),
     children: [
       {
         path: 'palettes',
         loadComponent: () =>
-          import('./pages/dashboard/palettes/palettes.component').then(
+          import('./features/dashboard/palettes/palettes.component').then(
             (m) => m.DashboardPalettesComponent,
           ),
       },
       {
         path: 'colors',
         loadComponent: () =>
-          import('./pages/dashboard/colors/colors.component').then(
+          import('./features/dashboard/colors/colors.component').then(
             (m) => m.DashboardColorsComponent,
           ),
       },

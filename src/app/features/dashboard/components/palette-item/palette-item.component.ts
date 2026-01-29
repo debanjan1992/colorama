@@ -1,10 +1,10 @@
 import { Component, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ColorStore, SavedPalette } from '../../store/color.store';
+import { ColorStore, SavedPalette } from '../../../../store/color.store';
 import { MessageService, MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
-import { APP_CONFIG } from '../../config/app.config';
-import { getContrastColor } from '../../utils/color-utils';
+import { APP_CONFIG } from '../../../../config/app.config';
+import { getContrastColor } from '../../../../utils/color-utils';
 
 @Component({
   selector: 'app-palette-item',

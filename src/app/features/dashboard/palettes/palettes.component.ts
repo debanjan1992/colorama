@@ -1,6 +1,6 @@
 import { Component, signal, inject, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PaletteItemComponent } from '../../../components/palette-item/palette-item.component';
+import { PaletteItemComponent } from '../components/palette-item/palette-item.component';
 import { SaveModalComponent } from '../../../components/save-modal/save-modal.component';
 import { SavedPalette, ColorStore } from '../../../store/color.store';
 import { Router } from '@angular/router';

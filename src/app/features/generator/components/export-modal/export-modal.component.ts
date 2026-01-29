@@ -5,8 +5,8 @@ import { Dialog } from 'primeng/dialog';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
-import { ColorStore } from '../../store/color.store';
-import { ExportService } from '../../core/services/export.service';
+import { ColorStore } from '../../../../store/color.store';
+import { ExportService } from '../../../../core/services/export.service';
 
 @Component({
   selector: 'app-export-modal',

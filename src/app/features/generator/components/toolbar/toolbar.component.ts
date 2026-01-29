@@ -1,6 +1,6 @@
 import { Component, inject, output } from '@angular/core';
 import { Router } from '@angular/router';
-import { ColorStore } from '../../store/color.store';
+import { ColorStore } from '../../../../store/color.store';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 
